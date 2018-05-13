@@ -3,6 +3,9 @@ compiler:
   - clang
   - gcc
 
+packages:
+  - flex
+
 install:
   - git clone --recursive https://github.com/DaveDavenport/rofi
   - cd rofi
