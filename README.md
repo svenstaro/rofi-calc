@@ -5,7 +5,7 @@ Plugin that uses libqalculate's `qalc` to parse natural language input and provi
 Run rofi like:
 
 ```bash
-    rofi -show calc -modi calc
+    rofi -show calc -modi calc -no-show-match -no-sort
 ```
 
 ## Compilation
