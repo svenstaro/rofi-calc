@@ -4,7 +4,7 @@ compiler:
   - gcc
 
 packages:
-  - flex
+  - flex/trusty-backports
 
 install:
   - git clone --recursive https://github.com/DaveDavenport/rofi
