@@ -1,4 +1,4 @@
-AC_INIT([calc], [0.1.0], [https://my-neat-plugin.org//],[],[https://support.my-neat-plugin.org/])
+AC_INIT([calc], [0.1.0], [https://github.com/svenstaro/rofi-calc],[],[https://github.com/svenstaro/rofi-calc/issues])
 
 AC_CONFIG_HEADER([config.h])
 
@@ -34,7 +34,7 @@ AM_PROG_AR
 dnl ---------------------------------------------------------------------
 dnl Base CFLAGS
 dnl ---------------------------------------------------------------------
-AM_CFLAGS="-Wall -Wextra -Wparentheses -Winline -pedantic  -Wunreachable-code"
+AM_CFLAGS="-Wall -Wextra -Wparentheses -Winline -pedantic -Wunreachable-code"
 
 
 dnl ---------------------------------------------------------------------
