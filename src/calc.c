@@ -45,7 +45,6 @@ G_MODULE_EXPORT Mode mode;
 typedef struct
 {
     char* last_result;
-    unsigned int array_length;
     GPtrArray* history;
 } CALCModePrivateData;
 
@@ -56,10 +55,10 @@ static void get_calc(Mode* sw)
      * this gets called on plugin initialization.
      */
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
-    pd->array_length = 1;
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
 }
+
 
 static int calc_mode_init(Mode* sw)
 {
@@ -74,33 +73,62 @@ static int calc_mode_init(Mode* sw)
     }
     return TRUE;
 }
+
+
 static unsigned int calc_mode_get_num_entries(const Mode* sw)
 {
     const CALCModePrivateData* pd = (const CALCModePrivateData*)mode_get_private_data(sw);
-    return pd->array_length;
+    return pd->history->len;
 }
 
-static ModeMode calc_mode_result(Mode* sw, int mretv, char** input, unsigned int selected_line)
+
+static gboolean is_error_string(char* str)
+{
+    if (g_strrstr(str, "warning:") != NULL || g_strrstr(str, "error:") != NULL) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+
+static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigned int selected_line)
 {
     ModeMode retv = MODE_EXIT;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
-    if (mretv & MENU_NEXT) {
+    if (menu_entry & MENU_NEXT) {
         g_message("next");
         retv = NEXT_DIALOG;
-    } else if (mretv & MENU_PREVIOUS) {
+    } else if (menu_entry & MENU_PREVIOUS) {
         g_message("previous");
         retv = PREVIOUS_DIALOG;
-    } else if (mretv & MENU_QUICK_SWITCH) {
+    } else if (menu_entry & MENU_QUICK_SWITCH) {
         g_message("switch");
-        retv = (mretv & MENU_LOWER_MASK);
-    } else if ((mretv & MENU_OK)) {
-        g_message("enter");
-        g_ptr_array_add(pd->history, (gpointer) pd->last_result);
+        retv = (menu_entry & MENU_LOWER_MASK);
+    } else if (((menu_entry & MENU_OK) && selected_line == 0) ||
+               ((menu_entry & MENU_CUSTOM_INPUT) && selected_line == -1)) {
+        if (!is_error_string(pd->last_result)) {
+            g_ptr_array_add(pd->history, (gpointer) pd->last_result);
+        }
         retv = RELOAD_DIALOG;
-    } else if ((mretv & MENU_ENTRY_DELETE) == MENU_ENTRY_DELETE) {
+    } else if ((menu_entry & MENU_OK) && selected_line > 0) {
+        g_message("Chose: %s", g_ptr_array_index(pd->history, selected_line - 1));
+        retv = RELOAD_DIALOG;
+    } else if ((menu_entry & MENU_ENTRY_DELETE) == MENU_ENTRY_DELETE) {
         g_message("delete");
         retv = RELOAD_DIALOG;
     }
+
+    g_message("");
+    g_message("ding: %x", menu_entry);
+    g_message("MENU_OK: %x", menu_entry & MENU_OK);
+    g_message("MENU_CANCEL: %x", menu_entry & MENU_CANCEL);
+    g_message("MENU_NEXT: %x", menu_entry & MENU_NEXT);
+    g_message("MENU_CUSTOM_INPUT: %x", menu_entry & MENU_CUSTOM_INPUT);
+    g_message("MENU_ENTRY_DELETE: %x", menu_entry & MENU_ENTRY_DELETE);
+    g_message("MENU_QUICK_SWITCH: %x", menu_entry & MENU_QUICK_SWITCH);
+    g_message("MENU_PREVIOUS: %x", menu_entry & MENU_PREVIOUS);
+    g_message("MENU_CUSTOM_ACTION: %x", menu_entry & MENU_CUSTOM_ACTION);
+    g_message("MENU_LOWER_MASK: %x", menu_entry & MENU_LOWER_MASK);
     return retv;
 }
 
@@ -120,10 +148,11 @@ static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, 
     if (!get_entry) {
         return NULL;
     }
-    g_message("selected line: %i", selected_line);
-    /* char* lol = g_ptr_array_index(pd->history, selected_line); */
-    /* g_message("array: %s", lol); */
-    return g_strdup("lol");
+    /* g_message("selected line: %i", selected_line); */
+    /* for (size_t i = 0; i < pd->history->len; ++i) { */
+    /*     char* thing = g_ptr_array_index(pd->history, i); */
+    /*     g_message(thing); */
+    /* } */
     return g_strdup(g_ptr_array_index(pd->history, selected_line));
 }
 
@@ -169,7 +198,7 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
             g_error("Error reading stdout: %s", error->message);
         }
 
-        // We only want to get the first line.
+        // We only want to get the first line from the qalc output.
         if(stdout_buf == '\n') {
             break;
         }
@@ -188,7 +217,7 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
 static char *calc_get_message ( const Mode *sw )
 {
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
-    if (g_strrstr(pd->last_result, "warning:") != NULL || g_strrstr(pd->last_result, "error:") != NULL) {
+    if (is_error_string(pd->last_result)) {
         return g_markup_printf_escaped("<span foreground='PaleVioletRed'>%s</span>", pd->last_result);
     }
     return g_markup_printf_escaped("<b>%s</b>", pd->last_result);
