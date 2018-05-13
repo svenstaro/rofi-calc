@@ -1,0 +1,16 @@
+language: c
+compiler:
+  - clang
+  - gcc
+
+install:
+  - git clone https://github.com/DaveDavenport/rofi
+  - cd rofi
+  - ./configure
+  - make
+  - make install
+
+script:
+  - ./autogen.sh
+  - cd build
+  - make
