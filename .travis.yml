@@ -4,13 +4,15 @@ compiler:
   - gcc
 
 install:
-  - git clone https://github.com/DaveDavenport/rofi
+  - git clone --recursive https://github.com/DaveDavenport/rofi
   - cd rofi
+  - autoreconf -i
   - ./configure
   - make
   - make install
 
 script:
-  - ./autogen.sh
-  - cd build
+  - autoreconf -i
+  - make
+  - ./configure
   - make
