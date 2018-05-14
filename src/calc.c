@@ -57,6 +57,7 @@ static void get_calc(Mode* sw)
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
+    g_ptr_array_add(pd->history, (gpointer) "Add to history");
 }
 
 
@@ -112,13 +113,14 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigne
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && selected_line > 0) {
         g_message("Chose: %s", g_ptr_array_index(pd->history, selected_line - 1));
-        retv = RELOAD_DIALOG;
+        retv = MODE_EXIT;
     } else if ((menu_entry & MENU_ENTRY_DELETE) == MENU_ENTRY_DELETE) {
         g_message("delete");
         retv = RELOAD_DIALOG;
     }
 
     g_message("");
+    g_message("selected_line: %i", selected_line);
     g_message("ding: %x", menu_entry);
     g_message("MENU_OK: %x", menu_entry & MENU_OK);
     g_message("MENU_CANCEL: %x", menu_entry & MENU_CANCEL);
