@@ -22,6 +22,7 @@ addons:
       - libxcb-xkb-dev
       - libxcb-randr0-dev
       - libxcb1-dev
+      - libxkbcommon-dev
 
 before_install:
   - sudo add-apt-repository -y 'deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse'
