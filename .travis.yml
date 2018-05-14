@@ -51,9 +51,9 @@ install:
   - ./configure
   - make
   - sudo make install
+  - cd -
 
 script:
   - autoreconf -i
-  - make
   - ./configure
   - make
