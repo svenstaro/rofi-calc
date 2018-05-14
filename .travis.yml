@@ -3,8 +3,10 @@ compiler:
   - clang
   - gcc
 
-packages:
-  - flex/trusty-backports
+addons:
+  apt:
+    packages:
+      - flex/trusty-backports
 
 install:
   - git clone --recursive https://github.com/DaveDavenport/rofi
