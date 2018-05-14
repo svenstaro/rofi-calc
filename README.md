@@ -1,11 +1,13 @@
 # rofi-calc plugin
 
-Plugin that uses libqalculate's `qalc` to parse natural language input and provide results.
+[![Build Status](https://travis-ci.com/svenstaro/rofi-calc.svg?branch=master)](https://travis-ci.com/svenstaro/rofi-calc)
+
+A [rofi](https://github.com/DaveDavenport/rofi) plugin that uses libqalculate's `qalc` to parse natural language input and provide results.
 
 Run rofi like:
 
 ```bash
-    rofi -show calc -modi calc -no-show-match -no-sort
+rofi -show calc -modi calc -no-show-match -no-sort
 ```
 
 ## Compilation
