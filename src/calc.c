@@ -93,6 +93,11 @@ static gboolean is_error_string(char* str)
     return FALSE;
 }
 
+static int get_real_history_index(GPtrArray* history, unsigned int selected_line)
+{
+    return history->len - selected_line;
+}
+
 
 static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigned int selected_line)
 {
@@ -107,30 +112,31 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigne
     } else if (((menu_entry & MENU_OK) && selected_line == 0) ||
                ((menu_entry & MENU_CUSTOM_INPUT) && selected_line == -1)) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
-            char* history_entry = g_strdup_printf("%i. %s", pd->history->len + 1, pd->last_result);
+            char* history_entry = g_strdup_printf("%s", pd->last_result);
             g_ptr_array_add(pd->history, (gpointer) history_entry);
         }
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && selected_line > 0) {
+        printf("%s\n", g_ptr_array_index(pd->history, get_real_history_index(pd->history, selected_line)));
         retv = MODE_EXIT;
     } else if (menu_entry & MENU_ENTRY_DELETE) {
         if (selected_line > 0) {
-            g_ptr_array_remove_index(pd->history, selected_line - 1);
+            g_ptr_array_remove_index(pd->history, get_real_history_index(pd->history, selected_line));
         }
         retv = RELOAD_DIALOG;
     }
 
-    g_message("selected_line: %i", selected_line);
-    g_message("ding: %x", menu_entry);
-    g_message("MENU_OK: %x", menu_entry & MENU_OK);
-    g_message("MENU_CANCEL: %x", menu_entry & MENU_CANCEL);
-    g_message("MENU_NEXT: %x", menu_entry & MENU_NEXT);
-    g_message("MENU_CUSTOM_INPUT: %x", menu_entry & MENU_CUSTOM_INPUT);
-    g_message("MENU_ENTRY_DELETE: %x", menu_entry & MENU_ENTRY_DELETE);
-    g_message("MENU_QUICK_SWITCH: %x", menu_entry & MENU_QUICK_SWITCH);
-    g_message("MENU_PREVIOUS: %x", menu_entry & MENU_PREVIOUS);
-    g_message("MENU_CUSTOM_ACTION: %x", menu_entry & MENU_CUSTOM_ACTION);
-    g_message("MENU_LOWER_MASK: %x", menu_entry & MENU_LOWER_MASK);
+    g_debug("selected_line: %i", selected_line);
+    g_debug("ding: %x", menu_entry);
+    g_debug("MENU_OK: %x", menu_entry & MENU_OK);
+    g_debug("MENU_CANCEL: %x", menu_entry & MENU_CANCEL);
+    g_debug("MENU_NEXT: %x", menu_entry & MENU_NEXT);
+    g_debug("MENU_CUSTOM_INPUT: %x", menu_entry & MENU_CUSTOM_INPUT);
+    g_debug("MENU_ENTRY_DELETE: %x", menu_entry & MENU_ENTRY_DELETE);
+    g_debug("MENU_QUICK_SWITCH: %x", menu_entry & MENU_QUICK_SWITCH);
+    g_debug("MENU_PREVIOUS: %x", menu_entry & MENU_PREVIOUS);
+    g_debug("MENU_CUSTOM_ACTION: %x", menu_entry & MENU_CUSTOM_ACTION);
+    g_debug("MENU_LOWER_MASK: %x", menu_entry & MENU_LOWER_MASK);
     return retv;
 }
 
@@ -154,13 +160,12 @@ static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, 
     if (selected_line == 0) {
         return g_strdup("Add to history");
     }
-    int real_index = pd->history->len - selected_line;
+    unsigned int real_index = get_real_history_index(pd->history, selected_line);
     return g_strdup(g_ptr_array_index(pd->history, real_index));
 }
 
 static int calc_token_match(const Mode* sw, rofi_int_matcher** tokens, unsigned int index)
 {
-    /* CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw); */
     return TRUE;
 }
 
