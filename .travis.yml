@@ -22,10 +22,12 @@ addons:
       - libxcb-xkb-dev
       - libxcb-randr0-dev
       - libxcb1-dev
-      - libxkbcommon-dev
+      - libxkbcommon-x11-dev
 
 before_install:
   - sudo add-apt-repository -y 'deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse'
+  - sudo add-apt-repository ppa:aguignard/ppa
+  - sudo apt-get install xcb-util-xrm
   - sudo apt-get update -qq
 
 
