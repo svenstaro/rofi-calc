@@ -57,7 +57,6 @@ static void get_calc(Mode* sw)
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
-    g_ptr_array_add(pd->history, (gpointer) "Add to history");
 }
 
 
@@ -79,12 +78,15 @@ static int calc_mode_init(Mode* sw)
 static unsigned int calc_mode_get_num_entries(const Mode* sw)
 {
     const CALCModePrivateData* pd = (const CALCModePrivateData*)mode_get_private_data(sw);
-    return pd->history->len;
+
+    // Add +1 because we put a static message into the history array as well.
+    return pd->history->len + 1;
 }
 
 
 static gboolean is_error_string(char* str)
 {
+
     if (g_strrstr(str, "warning:") != NULL || g_strrstr(str, "error:") != NULL) {
         return TRUE;
     }
@@ -97,29 +99,27 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigne
     ModeMode retv = MODE_EXIT;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     if (menu_entry & MENU_NEXT) {
-        g_message("next");
         retv = NEXT_DIALOG;
     } else if (menu_entry & MENU_PREVIOUS) {
-        g_message("previous");
         retv = PREVIOUS_DIALOG;
     } else if (menu_entry & MENU_QUICK_SWITCH) {
-        g_message("switch");
         retv = (menu_entry & MENU_LOWER_MASK);
     } else if (((menu_entry & MENU_OK) && selected_line == 0) ||
                ((menu_entry & MENU_CUSTOM_INPUT) && selected_line == -1)) {
-        if (!is_error_string(pd->last_result)) {
-            g_ptr_array_add(pd->history, (gpointer) pd->last_result);
+        if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
+            char* history_entry = g_strdup_printf("%i. %s", pd->history->len + 1, pd->last_result);
+            g_ptr_array_add(pd->history, (gpointer) history_entry);
         }
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && selected_line > 0) {
-        g_message("Chose: %s", g_ptr_array_index(pd->history, selected_line - 1));
         retv = MODE_EXIT;
-    } else if ((menu_entry & MENU_ENTRY_DELETE) == MENU_ENTRY_DELETE) {
-        g_message("delete");
+    } else if (menu_entry & MENU_ENTRY_DELETE) {
+        if (selected_line > 0) {
+            g_ptr_array_remove_index(pd->history, selected_line - 1);
+        }
         retv = RELOAD_DIALOG;
     }
 
-    g_message("");
     g_message("selected_line: %i", selected_line);
     g_message("ding: %x", menu_entry);
     g_message("MENU_OK: %x", menu_entry & MENU_OK);
@@ -150,12 +150,12 @@ static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, 
     if (!get_entry) {
         return NULL;
     }
-    /* g_message("selected line: %i", selected_line); */
-    /* for (size_t i = 0; i < pd->history->len; ++i) { */
-    /*     char* thing = g_ptr_array_index(pd->history, i); */
-    /*     g_message(thing); */
-    /* } */
-    return g_strdup(g_ptr_array_index(pd->history, selected_line));
+
+    if (selected_line == 0) {
+        return g_strdup("Add to history");
+    }
+    int real_index = pd->history->len - selected_line;
+    return g_strdup(g_ptr_array_index(pd->history, real_index));
 }
 
 static int calc_token_match(const Mode* sw, rofi_int_matcher** tokens, unsigned int index)
@@ -225,7 +225,7 @@ static char *calc_get_message ( const Mode *sw )
     if (is_error_string(pd->last_result)) {
         return g_markup_printf_escaped("<span foreground='PaleVioletRed'>%s</span>", pd->last_result);
     }
-    return g_markup_printf_escaped("<b>%s</b>", pd->last_result);
+    return g_markup_printf_escaped("Result: <b>%s</b>", pd->last_result);
 }
 
 Mode mode =
