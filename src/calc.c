@@ -164,13 +164,14 @@ static int calc_token_match(const Mode* sw, rofi_int_matcher** tokens, unsigned 
 
 static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_data)
 {
-    g_autoptr(GError) error = NULL;
+    GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(user_data);
     GSubprocess* process = (GSubprocess*)source_object;
     g_subprocess_wait_check_finish(process, res, &error);
 
     if (error != NULL) {
         g_error("Process errored with: %s", error->message);
+        g_error_free(error);
     }
 }
 
@@ -179,7 +180,7 @@ extern void rofi_view_reload(void);
 
 static char* calc_preprocess_input(Mode* sw, const char* input)
 {
-    g_autoptr(GError) error = NULL;
+    GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
     const gchar* const argv[] = { "/usr/bin/qalc", "+u8", "-s", "update_exchange_rates 1days", input, NULL };
@@ -187,6 +188,7 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
 
     if (error != NULL) {
         g_error("Spawning child failed: %s", error->message);
+        g_error_free(error);
     }
 
     GInputStream* p_stdout = g_subprocess_get_stdout_pipe(process);
@@ -196,6 +198,7 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     while (g_input_stream_read(p_stdout, &stdout_buf, 1, NULL, &error) != 0) {
         if (error != NULL) {
             g_error("Error reading stdout: %s", error->message);
+            g_error_free(error);
         }
 
         // We only want to get the first line from the qalc output.
