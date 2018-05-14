@@ -24,6 +24,7 @@ addons:
       - libxcb1-dev
       - libxkbcommon-x11-dev
       - libxkbcommon-dev
+      - texinfo
 
 before_install:
   - sudo add-apt-repository -y 'deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse'
