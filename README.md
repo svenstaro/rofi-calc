@@ -1,4 +1,4 @@
-# rofi-calc plugin
+# rofi-calc
 
 [![Build Status](https://travis-ci.com/svenstaro/rofi-calc.svg?branch=master)](https://travis-ci.com/svenstaro/rofi-calc)
 
