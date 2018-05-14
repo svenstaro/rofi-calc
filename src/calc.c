@@ -192,7 +192,7 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     }
 
     GInputStream* p_stdout = g_subprocess_get_stdout_pipe(process);
-    g_autoptr(GString) stdout_str = g_string_new(NULL);
+    GString* stdout_str = g_string_new(NULL);
 
     char stdout_buf;
     while (g_input_stream_read(p_stdout, &stdout_buf, 1, NULL, &error) != 0) {
