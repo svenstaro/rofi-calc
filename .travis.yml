@@ -29,7 +29,7 @@ before_install:
 
 
 install:
-  - sudo apt-get install -y --force-yes flex/trusty-backports
+  - sudo apt-get install -y --force-yes flex/trusty-backports libfl-dev/trusty-backports
 
   - git clone --recursive https://github.com/DaveDavenport/rofi
   - cd rofi
