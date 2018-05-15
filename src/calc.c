@@ -99,7 +99,7 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
 }
 
 
-static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigned int selected_line)
+static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** input, unsigned int selected_line)
 {
     ModeMode retv = MODE_EXIT;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
@@ -110,14 +110,14 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigne
     } else if (menu_entry & MENU_QUICK_SWITCH) {
         retv = (menu_entry & MENU_LOWER_MASK);
     } else if (((menu_entry & MENU_OK) && selected_line == 0) ||
-               ((menu_entry & MENU_CUSTOM_INPUT) && selected_line == -1)) {
+               ((menu_entry & MENU_CUSTOM_INPUT) && selected_line == -1u)) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
             char* history_entry = g_strdup_printf("%s", pd->last_result);
             g_ptr_array_add(pd->history, (gpointer) history_entry);
         }
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && selected_line > 0) {
-        printf("%s\n", g_ptr_array_index(pd->history, get_real_history_index(pd->history, selected_line)));
+        printf("%s\n", (char*)g_ptr_array_index(pd->history, get_real_history_index(pd->history, selected_line)));
         retv = MODE_EXIT;
     } else if (menu_entry & MENU_ENTRY_DELETE) {
         if (selected_line > 0) {
@@ -149,7 +149,7 @@ static void calc_mode_destroy(Mode* sw)
     }
 }
 
-static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, int* state, G_GNUC_UNUSED GList** attr_list, int get_entry)
+static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, G_GNUC_UNUSED int* state, G_GNUC_UNUSED GList** attr_list, int get_entry)
 {
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
@@ -164,26 +164,41 @@ static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, 
     return g_strdup(g_ptr_array_index(pd->history, real_index));
 }
 
-static int calc_token_match(const Mode* sw, rofi_int_matcher** tokens, unsigned int index)
+static int calc_token_match(G_GNUC_UNUSED const Mode* sw, G_GNUC_UNUSED rofi_int_matcher** tokens, G_GNUC_UNUSED unsigned int index)
 {
     return TRUE;
 }
 
+// It's a hacky way of making rofi show new window titles.
+extern void rofi_view_reload(void);
+
 static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_data)
 {
     GError *error = NULL;
-    CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(user_data);
     GSubprocess* process = (GSubprocess*)source_object;
+    GInputStream* stdout_stream = g_subprocess_get_stdout_pipe(process);
+    char** last_result = (char**)user_data;
+
     g_subprocess_wait_check_finish(process, res, &error);
 
     if (error != NULL) {
         g_error("Process errored with: %s", error->message);
         g_error_free(error);
     }
-}
 
-// It's a hacky way of making rofi show new window titles.
-extern void rofi_view_reload(void);
+    unsigned int stdout_bufsize = 4096;
+    char stdout_buf[stdout_bufsize];
+    g_input_stream_read_all(stdout_stream, stdout_buf, stdout_bufsize, NULL, NULL, &error);
+
+    if (error != NULL) {
+        g_error("Process errored with: %s", error->message);
+        g_error_free(error);
+    }
+
+    unsigned int line_length = strcspn(stdout_buf, "\n");
+    *last_result = g_strndup(stdout_buf, line_length);
+    rofi_view_reload();
+}
 
 static char* calc_preprocess_input(Mode* sw, const char* input)
 {
@@ -198,29 +213,8 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
         g_error_free(error);
     }
 
-    GInputStream* p_stdout = g_subprocess_get_stdout_pipe(process);
-    GString* stdout_str = g_string_new(NULL);
+    g_subprocess_wait_check_async(process, NULL, process_cb, (gpointer)&pd->last_result);
 
-    char stdout_buf;
-    while (g_input_stream_read(p_stdout, &stdout_buf, 1, NULL, &error) != 0) {
-        if (error != NULL) {
-            g_error("Error reading stdout: %s", error->message);
-            g_error_free(error);
-        }
-
-        // We only want to get the first line from the qalc output.
-        if(stdout_buf == '\n') {
-            break;
-        }
-
-        g_string_append_c(stdout_str, stdout_buf);
-
-    }
-    pd->last_result = g_strdup(stdout_str->str);
-
-    g_subprocess_wait_check_async(process, NULL, process_cb, sw);
-
-    rofi_view_reload();
     return g_strdup(input);
 }
 
