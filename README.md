@@ -20,6 +20,12 @@ rofi -show calc -modi calc -no-show-match -no-sort
 
 ### Installation
 
+#### On Arch Linux
+
+[rofi-calc in AUR](https://aur.archlinux.org/packages/rofi-calc/)
+
+#### From source
+
 **rofi-calc** uses autotools as build system. If installing from git, the following steps should install it:
 
 ```bash
