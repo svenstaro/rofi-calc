@@ -15,6 +15,7 @@ Run rofi like:
 ```bash
 rofi -show calc -modi calc -no-show-match -no-sort
 ```
+Since this uses libqalculate's amazing `qalc` you can try natural language queries such `500 + 25%` or `5000 EUR to USD` or `150 to hex`. It can also solve linear equations on the fly. Try `60x + 30 = 50`, for instance.
 
 ## Compilation
 
