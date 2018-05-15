@@ -1,6 +1,6 @@
 # rofi-calc
 
-**🖩 Do calculations in rofi!**
+**🖩 Do live calculations in rofi!**
 
 [![Build Status](https://travis-ci.com/svenstaro/rofi-calc.svg?branch=master)](https://travis-ci.com/svenstaro/rofi-calc)
 [![AUR](https://img.shields.io/aur/version/rofi-calc.svg)](https://aur.archlinux.org/packages/rofi-calc/)
