@@ -14,9 +14,7 @@ rofi -show calc -modi calc -no-show-match -no-sort
 
 ### Dependencies
 
-| Dependency | Version         |
-|------------|-----------------|
-| rofi 	     | 1.5 (or git)	   |
+You need rofi version at least 1.5.
 
 ### Installation
 
