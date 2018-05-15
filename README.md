@@ -8,14 +8,17 @@
 
 A [rofi](https://github.com/DaveDavenport/rofi) plugin that uses libqalculate's `qalc` to parse natural language input and provide results.
 
+Since this uses libqalculate's amazing `qalc` you can try natural language queries such `500 + 25%` or `5000 EUR to USD` or `150 to hex`. It can also solve linear equations on the fly. Try `60x + 30 = 50`, for instance.
+
 ![](demo.gif)
 
 Run rofi like:
 
-```bash
-rofi -show calc -modi calc -no-show-match -no-sort
-```
-Since this uses libqalculate's amazing `qalc` you can try natural language queries such `500 + 25%` or `5000 EUR to USD` or `150 to hex`. It can also solve linear equations on the fly. Try `60x + 30 = 50`, for instance.
+    rofi -show calc -modi calc -no-show-match -no-sort
+
+It's convenient to bind it to a key combination in i3. For instance, you could use:
+
+    bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort"
 
 ## Compilation
 
