@@ -2,7 +2,7 @@
  * rofi-plugin-template
  *
  * MIT/X11 License
- * Copyright (c) 2017 Qball Cow <qball@gmpclient.org>
+ * Copyright (c) 2018 Sven-Hendrik Haase <svenstaro@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
