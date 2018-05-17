@@ -1,5 +1,5 @@
 /**
- * rofi-plugin-template
+ * rofi-calc
  *
  * MIT/X11 License
  * Copyright (c) 2018 Sven-Hendrik Haase <svenstaro@gmail.com>
