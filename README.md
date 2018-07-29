@@ -24,7 +24,8 @@ It's convenient to bind it to a key combination in i3. For instance, you could u
 
 ### Dependencies
 
-You need rofi version at least 1.5 as well as qalculate.
+You need rofi (version >= 1.5) as well as qalculate (version > 2.0).
+Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of qalculate so you might have to compile your own.
 
 ### Installation
 
