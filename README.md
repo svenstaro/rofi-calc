@@ -24,14 +24,23 @@ It's convenient to bind it to a key combination in i3. For instance, you could u
 
 ### Dependencies
 
-You need rofi (version >= 1.5) as well as qalculate (version > 2.0).
-Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of qalculate so you might have to compile your own.
+You need a C compilation toolchain (a `cc`, `autoconf`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `libqalculate` (version > 2.0).
+
+You will also need development headers for `rofi` and `libqalculate`. Depending on your distribution these may be included in different packages:
+
+* Arch, Gentoo, OpenSUSE Leap: included with `rofi`, `libcalculate`
+* Debian, Ubuntu: `rofi-dev`, `libcalculate-dev`
+* CentOS, Fedora, Solus: `rofi-devel`, `libcalculate-devel`
+* Others: look it up :)
+
+Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `libqalculate` so you might have to compile your own.
 
 ### Installation
 
-#### On Arch Linux
+#### Package Manager
 
-[rofi-calc in AUR](https://aur.archlinux.org/packages/rofi-calc/)
+* [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
+* [OpenSUSE Leap](https://software.opensuse.org/package/rofi-calc)
 
 #### From source
 
