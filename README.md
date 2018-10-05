@@ -28,9 +28,12 @@ You need a C compilation toolchain (a `cc`, `autoconf`, `pkg-config`, ...), `rof
 
 You will also need development headers for `rofi` and `libqalculate`. Depending on your distribution these may be included in different packages:
 
-* Arch, Gentoo, OpenSUSE Leap: included with `rofi`, `libqalculate`
-* Debian, Ubuntu: `rofi-dev`, `libqalculate-dev`
-* CentOS, Fedora, Solus: `rofi-devel`, `libqalculate-devel`
+* Arch, Gentoo: included with `rofi`, `libqalculate`
+* OpenSUSE: `zypper in rofi qalculate` 
+* Debian: `dpkg --install rofi-dev qalc libqalculate-dev`
+* Ubuntu: `apt install rofi-dev qalc libqalculate-dev`
+* Solus: `eopkg it rofi-devel libqalculate-devel`
+* CentOS, Fedora: Install `qalculate` `libqalculate-devel` (find `rofi-devel` headers yourself)
 * Others: look it up :)
 
 Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `libqalculate` so you might have to compile your own.
