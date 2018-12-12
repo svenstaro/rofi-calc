@@ -36,7 +36,7 @@ You will also need development headers for `rofi` and `libqalculate`. Depending 
 * CentOS, Fedora: Install `qalculate` `libqalculate-devel` (find `rofi-devel` headers yourself)
 * Others: look it up :)
 
-Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `libqalculate` so you might have to compile your own.
+Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `libqalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
 
 ### Installation
 
