@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS=-I m4
-plugindir=${libdir}/rofi/
+plugindir=${rofi_PLUGIN_INSTALL_DIR}/
 
 plugin_LTLIBRARIES = calc.la
 
