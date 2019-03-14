@@ -43,7 +43,7 @@ Some distributions ship an [extremely outdated](https://github.com/svenstaro/rof
 #### Package Manager
 
 * [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
-* [OpenSUSE Leap](https://software.opensuse.org/package/rofi-calc)
+* [openSUSE](https://software.opensuse.org/package/rofi-calc)
 
 #### From source
 
