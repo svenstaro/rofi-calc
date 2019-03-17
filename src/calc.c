@@ -136,11 +136,16 @@ static void execsh(char* cmd, char* entry)
 
     // Otherwise, we will execute -calc-command
     gchar **parts = g_strsplit (entry, EQUATION_TOKEN_DELIM, 2);
-    char *complete_cmd = helper_string_replace_if_exists(cmd,
+    char *user_cmd = helper_string_replace_if_exists(cmd,
             EQUATION_LHS_KEY, parts[0],
             EQUATION_RHS_KEY, parts[1],
             NULL);
     g_free(parts);
+
+    // Escape it to pass to /bin/sh
+    gchar *escaped_cmd = g_strescape(user_cmd, NULL);
+    gchar *complete_cmd = g_strdup_printf("/bin/sh -c \"%s\"", escaped_cmd);
+    g_free(escaped_cmd);
 
     helper_execute_command(NULL, complete_cmd, FALSE, NULL);
 }
