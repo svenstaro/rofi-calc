@@ -44,9 +44,32 @@ G_MODULE_EXPORT Mode mode;
  */
 typedef struct
 {
+    char* cmd;
     char* last_result;
     GPtrArray* history;
 } CALCModePrivateData;
+
+
+/**
+ * Used in splitting equations into {expression} and {result}
+ */
+#define EQUATION_TOKEN_DELIM " = "
+
+
+/**
+ * Calc command option
+ */
+#define CALC_COMMAND_OPTION "-calc-command"
+
+
+/**
+ * The following keys can be specified in `CALC_COMMAND_FLAG` and
+ * will be replaced with the left-hand side and right-hand side of
+ * the equation.
+ */
+#define EQUATION_LHS_KEY "{expression}"
+#define EQUATION_RHS_KEY "{result}"
+
 
 static void get_calc(Mode* sw)
 {
@@ -57,6 +80,11 @@ static void get_calc(Mode* sw)
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
+
+    char *cmd = NULL;
+    if (find_arg_str(CALC_COMMAND_OPTION, &cmd)) {
+        pd->cmd = g_strdup(cmd);
+    }
 }
 
 
@@ -98,6 +126,24 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
     return history->len - selected_line;
 }
 
+static void execsh(char* cmd, char* entry)
+{
+    // If no command was provided, simply print the entry
+    if (cmd == NULL) {
+        printf("%s\n", entry);
+        return;
+    }
+
+    // Otherwise, we will execute -calc-command
+    gchar **parts = g_strsplit (entry, EQUATION_TOKEN_DELIM, 2);
+    char *complete_cmd = helper_string_replace_if_exists(cmd,
+            EQUATION_LHS_KEY, parts[0],
+            EQUATION_RHS_KEY, parts[1],
+            NULL);
+    g_free(parts);
+
+    helper_execute_command(NULL, complete_cmd, FALSE, NULL);
+}
 
 static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** input, unsigned int selected_line)
 {
@@ -117,7 +163,8 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         }
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && selected_line > 0) {
-        printf("%s\n", (char*)g_ptr_array_index(pd->history, get_real_history_index(pd->history, selected_line)));
+        char* entry = g_ptr_array_index(pd->history, get_real_history_index(pd->history, selected_line));
+        execsh(pd->cmd, entry);
         retv = MODE_EXIT;
     } else if (menu_entry & MENU_ENTRY_DELETE) {
         if (selected_line > 0) {
