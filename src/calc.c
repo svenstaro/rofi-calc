@@ -160,8 +160,7 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         retv = PREVIOUS_DIALOG;
     } else if (menu_entry & MENU_QUICK_SWITCH) {
         retv = (menu_entry & MENU_LOWER_MASK);
-    } else if (((menu_entry & MENU_OK) && selected_line == 0) ||
-               ((menu_entry & MENU_CUSTOM_INPUT) && selected_line == -1u)) {
+    } else if ((menu_entry & MENU_OK) && selected_line == 0) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
             char* history_entry = g_strdup_printf("%s", pd->last_result);
             g_ptr_array_add(pd->history, (gpointer) history_entry);
@@ -171,6 +170,13 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         char* entry = g_ptr_array_index(pd->history, get_real_history_index(pd->history, selected_line));
         execsh(pd->cmd, entry);
         retv = MODE_EXIT;
+    } else if (menu_entry & MENU_CUSTOM_INPUT) {
+        if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
+            execsh(pd->cmd, pd->last_result);
+            retv = MODE_EXIT;
+        } else {
+            retv = RELOAD_DIALOG;
+        }
     } else if (menu_entry & MENU_ENTRY_DELETE) {
         if (selected_line > 0) {
             g_ptr_array_remove_index(pd->history, get_real_history_index(pd->history, selected_line));
