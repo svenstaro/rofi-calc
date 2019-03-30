@@ -45,8 +45,9 @@ install:
   - make
   - sudo make install
   - cd -
-  - git clone --recursive https://github.com/DaveDavenport/rofi
+  - git clone --recursive https://github.com/davatorium/rofi
   - cd rofi
+  - git checkout 1.5.2
   - autoreconf -i
   - ./configure
   - make
