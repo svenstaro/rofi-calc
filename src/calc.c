@@ -53,7 +53,9 @@ typedef struct
 /**
  * Used in splitting equations into {expression} and {result}
  */
-#define EQUATION_TOKEN_DELIM " = "
+#define PARENS_LEFT  '('
+#define PARENS_RIGHT ')'
+#define EQUALS_SIGN  '='
 
 
 /**
@@ -126,6 +128,44 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
     return history->len - selected_line;
 }
 
+
+// Split the equation result into the left (expression) and right (result) side
+// of the equals sign.
+//
+// Note that both sides can themselves contain equals sign, consider the simple
+// example of `20x + 40 = 100`. This means we cannot naively split on the '='
+// character.
+static char** split_equation(char* string)
+{
+    int index = 0;
+    int parens_depth = 0;
+    char* curr = string;
+
+    // Iterate through and track our level of nestedness, stopping when
+    // we've hit an equals sign not inside other parentheses.
+    // At this point we can set the NULL character to split the string
+    // into `string` and `curr + 1`.
+    while (*curr) {
+        if (*curr == PARENS_LEFT) {
+            parens_depth++;
+        } else if (*curr == PARENS_RIGHT) {
+            parens_depth--;
+        } else if (*curr == EQUALS_SIGN && parens_depth == 0) {
+            break;
+        }
+        curr++;
+    }
+    *curr = '\0';
+
+    // Strip trailing whitespace with `g_strchomp()` from the left.
+    // Strip leading whitespace with `g_strchug()` from the right.
+    char** result = malloc(2 * sizeof(char*));
+    result[0] = g_strchomp(string);
+    result[1] = g_strchug(curr + 1);
+
+    return result;
+}
+
 static void execsh(char* cmd, char* entry)
 {
     // If no command was provided, simply print the entry
@@ -135,19 +175,20 @@ static void execsh(char* cmd, char* entry)
     }
 
     // Otherwise, we will execute -calc-command
-    gchar **parts = g_strsplit (entry, EQUATION_TOKEN_DELIM, 2);
+    char **parts = split_equation(entry);
     char *user_cmd = helper_string_replace_if_exists(cmd,
             EQUATION_LHS_KEY, parts[0],
             EQUATION_RHS_KEY, parts[1],
             NULL);
     g_free(parts);
 
-    // Escape it to pass to /bin/sh
     gchar *escaped_cmd = g_strescape(user_cmd, NULL);
     gchar *complete_cmd = g_strdup_printf("/bin/sh -c \"%s\"", escaped_cmd);
+    g_free(user_cmd);
     g_free(escaped_cmd);
 
     helper_execute_command(NULL, complete_cmd, FALSE, NULL);
+    g_free(complete_cmd);
 }
 
 static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** input, unsigned int selected_line)
