@@ -16,6 +16,17 @@ Run rofi like:
 
     rofi -show calc -modi calc -no-show-match -no-sort
 
+The result of the current input can be selected with `Ctrl+Enter`, and history entries can be selected with `Enter`. By default this will just output the equation/result.
+
+Use the `-calc-command` option to specify a shell command to execute which will be interpolated with the following keys:
+
+* `{expression}`: the left-side of the equation
+* `{result}`: the right of the equation
+
+The following example copies the result to the clipboard (NOTE: `{result}` should be quoted since it may contain characters that your shell would otherwise interpret):
+
+    rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo '{result}' | xclip"
+
 It's convenient to bind it to a key combination in i3. For instance, you could use:
 
     bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort"
