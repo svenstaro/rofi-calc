@@ -31,6 +31,10 @@ It's convenient to bind it to a key combination in i3. For instance, you could u
 
     bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort"
 
+To disable the bold font applied to the results by default, you can use the flag `-no-bold` and run rofi like:
+
+    rofi -show calc -modi calc -no-show-match -no-sort -no-bold
+
 ## Compilation
 
 ### Dependencies
