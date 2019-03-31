@@ -18,6 +18,8 @@ Run rofi like:
 
 The result of the current input can be selected with `Ctrl+Enter`, and history entries can be selected with `Enter`. By default this will just output the equation/result.
 
+Use the `-terse` option to reduce the output of `qalc` to just the result of the input expression.
+
 Use the `-calc-command` option to specify a shell command to execute which will be interpolated with the following keys:
 
 * `{expression}`: the left-side of the equation

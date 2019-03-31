@@ -71,6 +71,12 @@ typedef struct
 
 
 /**
+ * Terse option
+ */
+#define TERSE_OPTION "-terse"
+
+
+/**
  * The following keys can be specified in `CALC_COMMAND_FLAG` and
  * will be replaced with the left-hand side and right-hand side of
  * the equation.
@@ -310,7 +316,24 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
-    const gchar* const argv[] = { "qalc", "+u8", "-s", "update_exchange_rates 1days", input, NULL };
+    const gchar* const default_args[] = { "+u8", "-s", "update_exchange_rates 1days", input, NULL };
+    int len = sizeof(default_args) / sizeof(const gchar*);
+
+    int n_extra_args = 2; // "qalc" and optional  "-t"
+    const gchar** argv = malloc((len + n_extra_args) * sizeof(const gchar*));
+
+    int i = 0;
+    argv[i++] = "qalc";
+    if (find_arg(TERSE_OPTION) > -1) {
+        argv[i++] = "-t";
+    }
+    for (int j = 0; j < len; j++) {
+        if (default_args[j] != NULL) {
+            argv[i++] = default_args[j];
+        }
+    }
+    argv[i] = NULL;
+
     GSubprocess* process = g_subprocess_newv(argv, G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
 
     if (error != NULL) {
