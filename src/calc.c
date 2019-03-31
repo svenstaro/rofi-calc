@@ -65,6 +65,12 @@ typedef struct
 
 
 /**
+ * Flag to disable bold results
+ */
+#define RESULT_BOLD_OPTION "-no-bold"
+
+
+/**
  * The following keys can be specified in `CALC_COMMAND_FLAG` and
  * will be replaced with the left-hand side and right-hand side of
  * the equation.
@@ -323,7 +329,10 @@ static char *calc_get_message ( const Mode *sw )
     if (is_error_string(pd->last_result)) {
         return g_markup_printf_escaped("<span foreground='PaleVioletRed'>%s</span>", pd->last_result);
     }
-    return g_markup_printf_escaped("Result: <b>%s</b>", pd->last_result);
+    if (find_arg(RESULT_BOLD_OPTION) == -1)
+        return g_markup_printf_escaped("Result: <b>%s</b>", pd->last_result);
+    else
+        return g_markup_printf_escaped("Result: %s", pd->last_result);
 }
 
 Mode mode =
