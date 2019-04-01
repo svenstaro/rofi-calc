@@ -328,13 +328,11 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
         argv[i++] = "-t";
     }
     for (int j = 0; j < len; j++) {
-        if (default_args[j] != NULL) {
-            argv[i++] = default_args[j];
-        }
+        argv[i++] = default_args[j];
     }
-    argv[i] = NULL;
 
     GSubprocess* process = g_subprocess_newv(argv, G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    g_free(argv);
 
     if (error != NULL) {
         g_error("Spawning child failed: %s", error->message);
