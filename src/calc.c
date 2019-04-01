@@ -65,9 +65,9 @@ typedef struct
 
 
 /**
- * Flag to disable bold results
+ * Option to disable bold results
  */
-#define RESULT_BOLD_OPTION "-no-bold"
+#define NO_BOLD_OPTION "-no-bold"
 
 
 /**
@@ -329,7 +329,7 @@ static char *calc_get_message ( const Mode *sw )
     if (is_error_string(pd->last_result)) {
         return g_markup_printf_escaped("<span foreground='PaleVioletRed'>%s</span>", pd->last_result);
     }
-    if (find_arg(RESULT_BOLD_OPTION) == -1)
+    if (find_arg(NO_BOLD_OPTION) == -1)
         return g_markup_printf_escaped("Result: <b>%s</b>", pd->last_result);
     else
         return g_markup_printf_escaped("Result: %s", pd->last_result);
