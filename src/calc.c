@@ -319,19 +319,16 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     const gchar* const default_args[] = { "+u8", "-s", "update_exchange_rates 1days", input, NULL };
     int len = sizeof(default_args) / sizeof(const gchar*);
 
-    int n_extra_args = 2; // "qalc" and optional  "-t"
-    const gchar** argv = malloc((len + n_extra_args) * sizeof(const gchar*));
-
-    int i = 0;
-    argv[i++] = "qalc";
+    GArray *argv = g_array_new(TRUE, FALSE, sizeof(const gchar*));
+    g_array_append_val(argv, "qalc");
     if (find_arg(TERSE_OPTION) > -1) {
-        argv[i++] = "-t";
+        g_array_append_val(argv, "-t");
     }
-    for (int j = 0; j < len; j++) {
-        argv[i++] = default_args[j];
+    for (int i = 0; i < len; i++) {
+        g_array_append_val(argv, default_args[i]);
     }
 
-    GSubprocess* process = g_subprocess_newv(argv, G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    GSubprocess* process = g_subprocess_newv((const gchar**)argv, G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
     g_free(argv);
 
     if (error != NULL) {
