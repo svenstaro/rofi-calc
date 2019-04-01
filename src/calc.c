@@ -71,6 +71,12 @@ typedef struct
 
 
 /**
+ * Terse option
+ */
+#define TERSE_OPTION "-terse"
+
+
+/**
  * The following keys can be specified in `CALC_COMMAND_FLAG` and
  * will be replaced with the left-hand side and right-hand side of
  * the equation.
@@ -309,8 +315,19 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
-    const gchar* const argv[] = { "qalc", "+u8", "-s", "update_exchange_rates 1days", input, NULL };
-    GSubprocess* process = g_subprocess_newv(argv, G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    GPtrArray *argv = g_ptr_array_new();
+    g_ptr_array_add(argv, "qalc");
+    g_ptr_array_add(argv, "+u8");
+    g_ptr_array_add(argv, "-s");
+    g_ptr_array_add(argv, "update_exchange_rates 1days");
+    if (find_arg(TERSE_OPTION) > -1) {
+        g_ptr_array_add(argv, "-t");
+    }
+    g_ptr_array_add(argv, (gchar*)input);
+    g_ptr_array_add(argv, NULL);
+
+    GSubprocess* process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    g_ptr_array_free(argv, TRUE);
 
     if (error != NULL) {
         g_error("Spawning child failed: %s", error->message);
