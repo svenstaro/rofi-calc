@@ -143,7 +143,6 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
 // character.
 static char** split_equation(char* string)
 {
-    int index = 0;
     int parens_depth = 0;
     char* curr = string;
 
