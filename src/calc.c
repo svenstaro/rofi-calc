@@ -316,20 +316,18 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
-    const gchar* const default_args[] = { "+u8", "-s", "update_exchange_rates 1days", input, NULL };
-    int len = sizeof(default_args) / sizeof(const gchar*);
-
     GArray *argv = g_array_new(TRUE, FALSE, sizeof(const gchar*));
     g_array_append_val(argv, "qalc");
+    g_array_append_val(argv, "+u8");
+    g_array_append_val(argv, "-s");
+    g_array_append_val(argv, "update_exchange_rates 1days");
     if (find_arg(TERSE_OPTION) > -1) {
         g_array_append_val(argv, "-t");
     }
-    for (int i = 0; i < len; i++) {
-        g_array_append_val(argv, default_args[i]);
-    }
+    g_array_append_val(argv, input);
 
-    GSubprocess* process = g_subprocess_newv((const gchar**)argv, G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
-    g_free(argv);
+    GSubprocess* process = g_subprocess_newv((const gchar**)(&(argv->data)), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    g_array_free(argv, TRUE);
 
     if (error != NULL) {
         g_error("Spawning child failed: %s", error->message);
