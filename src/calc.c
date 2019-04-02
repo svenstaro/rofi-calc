@@ -149,6 +149,14 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
 // character.
 static char** split_equation(char* string)
 {
+    char** result = malloc(2 * sizeof(char*));
+
+    if (find_arg(TERSE_OPTION) > -1) {
+        result[0] = NULL;
+        result[1] = g_strdup(string); // with -terse, string _is_ the result
+        return result;
+    }
+
     int parens_depth = 0;
     char* curr = string;
 
@@ -170,7 +178,6 @@ static char** split_equation(char* string)
 
     // Strip trailing whitespace with `g_strchomp()` from the left.
     // Strip leading whitespace with `g_strchug()` from the right.
-    char** result = malloc(2 * sizeof(char*));
     result[0] = g_strchomp(string);
     result[1] = g_strchug(curr + 1);
 

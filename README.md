@@ -22,7 +22,7 @@ Use the `-terse` option to reduce the output of `qalc` to just the result of the
 
 Use the `-calc-command` option to specify a shell command to execute which will be interpolated with the following keys:
 
-* `{expression}`: the left-side of the equation
+* `{expression}`: the left-side of the equation (currently not available when using `-terse`)
 * `{result}`: the right of the equation
 
 The following example copies the result to the clipboard (NOTE: `{result}` should be quoted since it may contain characters that your shell would otherwise interpret):
