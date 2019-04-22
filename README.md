@@ -18,6 +18,8 @@ Run rofi like:
 
 The result of the current input can be selected with `Ctrl+Enter`, and history entries can be selected with `Enter`. By default this will just output the equation/result.
 
+## Advanced Usage
+
 Use the `-terse` option to reduce the output of `qalc` to just the result of the input expression.
 
 Use the `-calc-command` option to specify a shell command to execute which will be interpolated with the following keys:
@@ -37,7 +39,7 @@ To disable the bold font applied to the results by default, you can use the flag
 
     rofi -show calc -modi calc -no-show-match -no-sort -no-bold
 
-To disable the history:
+To disable the history, use `-no-history`:
 
     rofi -show calc -modi calc -no-show-match -no-sort -no-history
 
