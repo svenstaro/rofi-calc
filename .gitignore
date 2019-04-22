@@ -11,3 +11,4 @@ missing
 configure
 config.*
 build/
+compile_commands.json
