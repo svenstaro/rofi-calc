@@ -1,28 +1,27 @@
-/**
- * rofi-calc
- *
- * MIT/X11 License
- * Copyright (c) 2018 Sven-Hendrik Haase <svenstaro@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+// rofi-calc
+//
+// MIT/X11 License
+// Copyright (c) 2018 Sven-Hendrik Haase <svenstaro@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -39,9 +38,7 @@
 
 G_MODULE_EXPORT Mode mode;
 
-/**
- * The internal data structure holding the private data of the TEST Mode.
- */
+// The internal data structure holding the private data of the TEST Mode.
 typedef struct
 {
     char* cmd;
@@ -50,47 +47,35 @@ typedef struct
 } CALCModePrivateData;
 
 
-/**
- * Used in splitting equations into {expression} and {result}
- */
+// Used in splitting equations into {expression} and {result}.
 #define PARENS_LEFT  '('
 #define PARENS_RIGHT ')'
 #define EQUALS_SIGN  '='
 
 
-/**
- * Calc command option
- */
+// Calc command option
 #define CALC_COMMAND_OPTION "-calc-command"
 
 
-/**
- * Option to disable bold results
- */
+// Option to disable bold results
 #define NO_BOLD_OPTION "-no-bold"
 
 
-/**
- * Terse option
- */
+// Terse option
 #define TERSE_OPTION "-terse"
 
 
-/**
- * The following keys can be specified in `CALC_COMMAND_FLAG` and
- * will be replaced with the left-hand side and right-hand side of
- * the equation.
- */
+// The following keys can be specified in `CALC_COMMAND_FLAG` and
+// will be replaced with the left-hand side and right-hand side of
+// the equation.
 #define EQUATION_LHS_KEY "{expression}"
 #define EQUATION_RHS_KEY "{result}"
 
 
 static void get_calc(Mode* sw)
 {
-    /**
-     * Get the entries to display.
-     * this gets called on plugin initialization.
-     */
+    // Get the entries to display.
+    // This gets called on plugin initialization.
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
@@ -104,9 +89,7 @@ static void get_calc(Mode* sw)
 
 static int calc_mode_init(Mode* sw)
 {
-    /**
-     * Called on startup when enabled (in modi list)
-     */
+    // Called on startup when enabled (in modi list)
     if (mode_get_private_data(sw) == NULL) {
         CALCModePrivateData* pd = g_malloc0(sizeof(*pd));
         mode_set_private_data(sw, (void*)pd);
@@ -314,6 +297,7 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
 
     unsigned int line_length = strcspn(stdout_buf, "\n");
     *last_result = g_strndup(stdout_buf, line_length);
+
     rofi_view_reload();
 }
 
@@ -322,6 +306,7 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
+    // Build array of strings that is later fed into a subprocess to actually start qalc with proper parameters.
     GPtrArray *argv = g_ptr_array_new();
     g_ptr_array_add(argv, "qalc");
     g_ptr_array_add(argv, "+u8");
