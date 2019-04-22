@@ -37,6 +37,10 @@ To disable the bold font applied to the results by default, you can use the flag
 
     rofi -show calc -modi calc -no-show-match -no-sort -no-bold
 
+To disable the history:
+
+    rofi -show calc -modi calc -no-show-match -no-sort -no-history
+
 ## Compilation
 
 ### Dependencies

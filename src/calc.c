@@ -72,10 +72,77 @@ typedef struct
 #define EQUATION_RHS_KEY "{result}"
 
 
+// History stuff
+#define NO_HISTORY_OPTION "-no-history"
+#define HISTORY_LENGTH 100
+
+
+// Limit `str` to at most `limit` new lines.
+// Returns a new string of either the limited length or the length length.
+// However, in both cases, it's a new string.
+static gchar* limit_to_n_newlines(gchar* str, uint32_t limit) {
+    uint32_t newlines = 0;
+    uint32_t last_index = 0;
+    uint32_t string_length = strlen(str);
+
+    while (last_index < string_length) {
+        if (str[last_index] == '\n') {
+            newlines++;
+        }
+
+        if (newlines >= limit) {
+            gchar* limited_str = g_strndup(str, last_index);
+            return limited_str;
+        }
+
+        last_index++;
+    }
+
+    return g_strdup(str);
+}
+
+
+// Append `input` to history.
+static void append_str_to_history(gchar* input) {
+    GError *error = NULL;
+    gchar* history_file = g_build_filename(g_get_user_data_dir(), "rofi", "rofi_calc_history", NULL);
+    gchar* history_contents;
+
+    if (g_file_test(history_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
+        g_file_get_contents(history_file, &history_contents, NULL, &error);
+
+        if (error != NULL) {
+            g_error("Error while reading the history file: %s", error->message);
+            g_error_free(error);
+        }
+    } else {
+        // Empty history, initialize it.
+        history_contents = "";
+    }
+
+    gchar* new_history = g_strjoin("\n", history_contents, input, NULL);
+    g_strstrip(new_history);
+
+    gchar* limited_str = g_strreverse(limit_to_n_newlines(g_strreverse(new_history), HISTORY_LENGTH));
+
+    g_file_set_contents(history_file, limited_str, -1, &error);
+
+    if (error != NULL) {
+        g_error("Error while writing the history file: %s", error->message);
+        g_error_free(error);
+    }
+
+    g_free(limited_str);
+    g_free(new_history);
+    g_free(history_contents);
+    g_free(history_file);
+}
+
+
+// Get the entries to display.
+// This gets called on plugin initialization.
 static void get_calc(Mode* sw)
 {
-    // Get the entries to display.
-    // This gets called on plugin initialization.
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
@@ -84,18 +151,45 @@ static void get_calc(Mode* sw)
     if (find_arg_str(CALC_COMMAND_OPTION, &cmd)) {
         pd->cmd = g_strdup(cmd);
     }
+
+    if (find_arg(NO_HISTORY_OPTION) == -1) {
+        // Load old history if it exists.
+        GError *error = NULL;
+        gchar* history_file = g_build_filename(g_get_user_data_dir(), "rofi", "rofi_calc_history", NULL);
+        gchar* history_contents;
+
+        if (g_file_test(history_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
+            g_file_get_contents(history_file, &history_contents, NULL, &error);
+
+            if (error != NULL) {
+                g_error("Error while reading the history file: %s", error->message);
+                g_error_free(error);
+            }
+
+            char* newline = strtok(history_contents, "\n");
+
+            while(newline != NULL) {
+                g_ptr_array_add(pd->history, newline);
+
+                newline = strtok(NULL, "\n");
+            }
+        }
+
+        g_free(history_file);
+    }
 }
 
 
+// Called on startup when enabled (in modi list)
 static int calc_mode_init(Mode* sw)
 {
-    // Called on startup when enabled (in modi list)
     if (mode_get_private_data(sw) == NULL) {
         CALCModePrivateData* pd = g_malloc0(sizeof(*pd));
         mode_set_private_data(sw, (void*)pd);
         // Load content.
         get_calc(sw);
     }
+
     return TRUE;
 }
 
@@ -117,6 +211,7 @@ static gboolean is_error_string(char* str)
     }
     return FALSE;
 }
+
 
 static int get_real_history_index(GPtrArray* history, unsigned int selected_line)
 {
@@ -167,6 +262,7 @@ static char** split_equation(char* string)
     return result;
 }
 
+
 static void execsh(char* cmd, char* entry)
 {
     // If no command was provided, simply print the entry
@@ -192,6 +288,7 @@ static void execsh(char* cmd, char* entry)
     g_free(complete_cmd);
 }
 
+
 static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** input, unsigned int selected_line)
 {
     ModeMode retv = MODE_EXIT;
@@ -206,6 +303,9 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
             char* history_entry = g_strdup_printf("%s", pd->last_result);
             g_ptr_array_add(pd->history, (gpointer) history_entry);
+            if (find_arg(NO_HISTORY_OPTION) == -1) {
+                append_str_to_history(history_entry);
+            }
         }
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && selected_line > 0) {
@@ -264,6 +364,7 @@ static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, 
     return g_strdup(g_ptr_array_index(pd->history, real_index));
 }
 
+
 static int calc_token_match(G_GNUC_UNUSED const Mode* sw, G_GNUC_UNUSED rofi_int_matcher** tokens, G_GNUC_UNUSED unsigned int index)
 {
     return TRUE;
@@ -271,6 +372,7 @@ static int calc_token_match(G_GNUC_UNUSED const Mode* sw, G_GNUC_UNUSED rofi_int
 
 // It's a hacky way of making rofi show new window titles.
 extern void rofi_view_reload(void);
+
 
 static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_data)
 {
@@ -300,6 +402,7 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
 
     rofi_view_reload();
 }
+
 
 static char* calc_preprocess_input(Mode* sw, const char* input)
 {
