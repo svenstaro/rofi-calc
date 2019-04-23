@@ -105,11 +105,16 @@ static gchar* limit_to_n_newlines(gchar* str, uint32_t limit) {
 // Append `input` to history.
 static void append_str_to_history(gchar* input) {
     GError *error = NULL;
-    gchar* history_file = g_build_filename(g_get_user_data_dir(), "rofi", "rofi_calc_history", NULL);
+    gchar* history_dir = g_build_filename(g_get_user_data_dir(), "rofi", NULL);
+    gchar* history_file = g_build_filename(history_dir, "rofi_calc_history", NULL);
     gchar* history_contents;
+    gboolean old_history_was_read = FALSE;
+
+    g_mkdir_with_parents(history_dir, 0755);
 
     if (g_file_test(history_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
         g_file_get_contents(history_file, &history_contents, NULL, &error);
+        old_history_was_read = TRUE;
 
         if (error != NULL) {
             g_error("Error while reading the history file: %s", error->message);
@@ -134,8 +139,11 @@ static void append_str_to_history(gchar* input) {
 
     g_free(limited_str);
     g_free(new_history);
-    g_free(history_contents);
+    if (old_history_was_read) {
+        g_free(history_contents);
+    }
     g_free(history_file);
+    g_free(history_dir);
 }
 
 
