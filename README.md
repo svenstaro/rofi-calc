@@ -66,6 +66,7 @@ Some distributions ship an [extremely outdated](https://github.com/svenstaro/rof
 #### Package Manager
 
 * [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
+* [FreeBSD](https://www.freshports.org/x11/rofi-calc/)
 * [openSUSE](https://software.opensuse.org/package/rofi-calc)
 
 #### From source
