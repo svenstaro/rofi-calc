@@ -34,8 +34,7 @@ AM_PROG_AR
 dnl ---------------------------------------------------------------------
 dnl Base CFLAGS
 dnl ---------------------------------------------------------------------
-AM_CFLAGS="-Wall -Wextra -Wparentheses -Winline -pedantic -Wunreachable-code"
-
+AX_APPEND_COMPILE_FLAGS([-Wall -Wextra -Wparentheses -Winline -pedantic -Wunreachable-code])
 
 dnl ---------------------------------------------------------------------
 dnl Check dependencies

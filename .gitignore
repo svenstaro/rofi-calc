@@ -6,7 +6,7 @@ compile
 depcomp
 install-sh
 ltmain.sh
-m4
+m4/lt*
 missing
 configure
 config.*
