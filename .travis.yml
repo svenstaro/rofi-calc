@@ -47,7 +47,7 @@ install:
   - cd -
   - git clone --recursive https://github.com/davatorium/rofi
   - cd rofi
-  - git checkout 1.5.2
+  - git checkout 1.5.4
   - autoreconf -i
   - ./configure
   - make
