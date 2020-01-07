@@ -18,6 +18,42 @@ Run rofi like:
 
 The result of the current input can be selected with `Ctrl+Enter`, and history entries can be selected with `Enter`. By default this will just output the equation/result.
 
+## Installation
+
+### Via package manager
+
+* [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
+* [FreeBSD](https://www.freshports.org/x11/rofi-calc/)
+* [Gentoo](https://packages.gentoo.org/packages/x11-misc/rofi-pass)
+* [openSUSE](https://software.opensuse.org/package/rofi-calc)
+
+### From source
+
+You need a C compilation toolchain (a `cc`, `autoconf`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `libqalculate` (version > 2.0).
+
+You will also need development headers for `rofi` and `libqalculate`. Depending on your distribution these may be included in different packages:
+
+* Arch, Gentoo: included with `rofi`, `libqalculate`
+* OpenSUSE: `zypper in rofi rofi-devel qalculate`
+* Debian: `dpkg --install rofi-dev qalc libqalculate-dev`
+* Ubuntu: `apt install rofi-dev qalc libqalculate-dev`
+* Solus: `eopkg it rofi-devel libqalculate-devel`
+* CentOS, Fedora: Install `qalculate` `libqalculate-devel` (find `rofi-devel` headers yourself)
+* Others: look it up :)
+
+Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `libqalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
+
+**rofi-calc** uses autotools as build system. If installing from git, the following steps should install it:
+
+```bash
+$ autoreconf -i
+$ mkdir build
+$ cd build/
+$ ../configure
+$ make
+$ make install
+```
+
 ## Advanced Usage
 
 Use the `-qalc-binary` option to specify the name or location of qalculate's `qalc` binary. Defaults to `qalc`.
@@ -44,43 +80,3 @@ To disable the bold font applied to the results by default, you can use the flag
 To disable the history, use `-no-history`:
 
     rofi -show calc -modi calc -no-show-match -no-sort -no-history
-
-## Compilation
-
-### Dependencies
-
-You need a C compilation toolchain (a `cc`, `autoconf`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `libqalculate` (version > 2.0).
-
-You will also need development headers for `rofi` and `libqalculate`. Depending on your distribution these may be included in different packages:
-
-* Arch, Gentoo: included with `rofi`, `libqalculate`
-* OpenSUSE: `zypper in rofi rofi-devel qalculate`
-* Debian: `dpkg --install rofi-dev qalc libqalculate-dev`
-* Ubuntu: `apt install rofi-dev qalc libqalculate-dev`
-* Solus: `eopkg it rofi-devel libqalculate-devel`
-* CentOS, Fedora: Install `qalculate` `libqalculate-devel` (find `rofi-devel` headers yourself)
-* Others: look it up :)
-
-Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `libqalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
-
-### Installation
-
-#### Package Manager
-
-* [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
-* [FreeBSD](https://www.freshports.org/x11/rofi-calc/)
-* [Gentoo](https://packages.gentoo.org/packages/x11-misc/rofi-pass)
-* [openSUSE](https://software.opensuse.org/package/rofi-calc)
-
-#### From source
-
-**rofi-calc** uses autotools as build system. If installing from git, the following steps should install it:
-
-```bash
-$ autoreconf -i
-$ mkdir build
-$ cd build/
-$ ../configure
-$ make
-$ make install
-```
