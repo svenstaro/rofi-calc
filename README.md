@@ -69,6 +69,7 @@ Some distributions ship an [extremely outdated](https://github.com/svenstaro/rof
 
 * [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
 * [FreeBSD](https://www.freshports.org/x11/rofi-calc/)
+* [Gentoo](https://packages.gentoo.org/packages/x11-misc/rofi-pass)
 * [openSUSE](https://software.opensuse.org/package/rofi-calc)
 
 #### From source
