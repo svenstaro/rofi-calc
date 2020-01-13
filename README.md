@@ -24,7 +24,7 @@ The result of the current input can be selected with `Ctrl+Enter`, and history e
 
 * [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
 * [FreeBSD](https://www.freshports.org/x11/rofi-calc/)
-* [Gentoo](https://packages.gentoo.org/packages/x11-misc/rofi-pass)
+* [Gentoo](https://packages.gentoo.org/packages/x11-misc/rofi-calc)
 * [openSUSE](https://software.opensuse.org/package/rofi-calc)
 
 ### From source
