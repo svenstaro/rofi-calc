@@ -90,3 +90,9 @@ To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than 
 > For space separator:
 
     digit_grouping=1
+
+## Development
+
+If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
+
+    rofi -plugin-path build/.libs -show calc -modi calc -no-show-match -no-sort

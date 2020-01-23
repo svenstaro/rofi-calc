@@ -151,6 +151,76 @@ static void append_str_to_history(gchar* input) {
 }
 
 
+// Count number of new lines in a string.
+static uint32_t get_number_of_newlines(gchar* string, gsize length) {
+    uint32_t lines = 0;
+    for (uint32_t i = 0; i < length; i++) {
+        if (string[i] == '\n') {
+            lines++;
+        }
+    }
+
+    return lines;
+}
+
+
+// Delete a certain line number from history.
+static void delete_line_from_history(uint32_t line) {
+    GError *error = NULL;
+    gchar* history_dir = g_build_filename(g_get_user_data_dir(), "rofi", NULL);
+    gchar* history_file = g_build_filename(history_dir, "rofi_calc_history", NULL);
+    gchar* history_contents;
+    gsize history_length;
+    gboolean old_history_was_read = FALSE;
+
+    if (g_file_test(history_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
+        g_file_get_contents(history_file, &history_contents, &history_length, &error);
+        old_history_was_read = TRUE;
+
+        if (error != NULL) {
+            g_error("Error while reading the history file: %s", error->message);
+            g_error_free(error);
+        }
+    } else {
+        // Empty history, do nothing and exit early.
+        return;
+    }
+
+    uint32_t newlines = get_number_of_newlines(history_contents, history_length);
+    GString* new_history = g_string_new("");
+    uint32_t current_line = 0;
+    uint32_t line_to_delete = newlines - line;
+    for (gsize c = 0; c < history_length; c++) {
+        if (history_contents[c] == '\n') {
+            current_line++;
+        }
+
+        // Skip any copying of history if the line we're on is the line we're trying to get rid of.
+        if (current_line == line_to_delete) {
+            continue;
+        }
+
+        new_history = g_string_append_c(new_history, history_contents[c]);
+
+    }
+
+    gchar* new_history_str = g_string_free(new_history, FALSE);
+    g_file_set_contents(history_file, new_history_str, -1, &error);
+
+    if (error != NULL) {
+        g_error("Error while writing the history file: %s", error->message);
+        g_error_free(error);
+    }
+
+    g_free(new_history_str);
+    if (old_history_was_read) {
+        g_free(history_contents);
+    }
+    g_free(history_file);
+    g_free(history_dir);
+}
+
+
 // Get the entries to display.
 // This gets called on plugin initialization.
 static void get_calc(Mode* sw)
@@ -334,6 +404,9 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
     } else if (menu_entry & MENU_ENTRY_DELETE) {
         if (selected_line > 0) {
             g_ptr_array_remove_index(pd->history, get_real_history_index(pd->history, selected_line));
+            if (find_arg(NO_HISTORY_OPTION) == -1) {
+                delete_line_from_history(selected_line - 1);
+            }
         }
         retv = RELOAD_DIALOG;
     }
