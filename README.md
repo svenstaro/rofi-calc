@@ -80,3 +80,13 @@ To disable the bold font applied to the results by default, you can use the flag
 To disable the history, use `-no-history`:
 
     rofi -show calc -modi calc -no-show-match -no-sort -no-history
+    
+To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
+
+ - For `,` seperator:
+
+    `digit_grouping=2`
+
+ - For space separator:
+
+    `digit_grouping=1`
