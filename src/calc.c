@@ -201,7 +201,6 @@ static void delete_line_from_history(uint32_t line) {
         }
 
         new_history = g_string_append_c(new_history, history_contents[c]);
-
     }
 
     gchar* new_history_str = g_string_free(new_history, FALSE);
