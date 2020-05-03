@@ -22,7 +22,7 @@ The result of the current input can be selected with `Ctrl+Enter`, and history e
 
 ### Via package manager
 
-* [Arch AUR](https://aur.archlinux.org/packages/rofi-calc/)
+* [Arch Linux](https://www.archlinux.org/packages/community/x86_64/rofi-calc/)
 * [FreeBSD](https://www.freshports.org/x11/rofi-calc/)
 * [Gentoo](https://packages.gentoo.org/packages/x11-misc/rofi-calc)
 * [openSUSE](https://software.opensuse.org/package/rofi-calc)
