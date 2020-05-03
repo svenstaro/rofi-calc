@@ -2,6 +2,7 @@
 *.m4
 ar-lib
 *.cache
+.clangd
 compile
 depcomp
 install-sh
