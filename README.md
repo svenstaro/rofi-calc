@@ -69,7 +69,7 @@ The following example copies the result to the clipboard upon pressing the key c
 (by default Control+Return).
 NOTE: `{result}` should be quoted since it may contain characters that your shell would otherwise interpret:
 
-    rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo '{result}' | xclip"
+    rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo -n '{result}' | xclip"
 
 It's convenient to bind it to a key combination in i3. For instance, you could use:
 
