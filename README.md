@@ -93,6 +93,13 @@ To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than 
 
     digit_grouping=1
 
+To use a different output format for numeric representations (for instance, some locales use `,` instead of `.` as a decimal separator),
+set `LC_NUMERIC` to a different value like this:
+
+    LC_NUMERIC=de_DE.UTF-8 rofi -show calc -modi calc -no-show-match -no-sort
+
+Make sure the locale is actually available on your system!
+
 ## Development
 
 If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
