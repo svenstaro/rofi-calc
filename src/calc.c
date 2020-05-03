@@ -483,6 +483,12 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
 
     unsigned int line_length = strcspn(stdout_buf, "\n");
     *last_result = g_strndup(stdout_buf, line_length);
+    g_input_stream_close(stdout_stream, NULL, &error);
+
+    if (error != NULL) {
+        g_error("Process errored with: %s", error->message);
+        g_error_free(error);
+    }
 
     rofi_view_reload();
 }
