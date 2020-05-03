@@ -65,7 +65,9 @@ Use the `-calc-command` option to specify a shell command to execute which will 
 * `{expression}`: the left-side of the equation (currently not available when using `-terse`)
 * `{result}`: the right of the equation
 
-The following example copies the result to the clipboard (NOTE: `{result}` should be quoted since it may contain characters that your shell would otherwise interpret):
+The following example copies the result to the clipboard upon pressing the key combination defined by `-kb-accept-custom`
+(by default Control+Return).
+NOTE: `{result}` should be quoted since it may contain characters that your shell would otherwise interpret:
 
     rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo '{result}' | xclip"
 
