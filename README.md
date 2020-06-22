@@ -35,8 +35,8 @@ You will also need development headers for `rofi` and `libqalculate`. Depending 
 
 * Arch, Gentoo: included with `rofi`, `libqalculate`
 * OpenSUSE: `zypper in rofi rofi-devel qalculate`
-* Debian: `dpkg --install rofi-dev qalc libqalculate-dev`
-* Ubuntu: `apt install rofi-dev qalc libqalculate-dev`
+* Debian: `dpkg --install rofi-dev qalc libqalculate-dev libtool`
+* Ubuntu: `apt install rofi-dev qalc libqalculate-dev libtool`
 * Solus: `eopkg it rofi-devel libqalculate-devel`
 * CentOS, Fedora: Install `qalculate` `libqalculate-devel` (find `rofi-devel` headers yourself)
 * Others: look it up :)
