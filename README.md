@@ -18,6 +18,8 @@ Run rofi like:
 
 The result of the current input can be selected with `Ctrl+Enter`, and history entries can be selected with `Enter`. By default this will just output the equation/result.
 
+The history file by default sits at `$HOME/.local/share/rofi/rofi_calc_history` in case you ever need to delete it or change it manually.
+
 ## Installation
 
 ### Via package manager
