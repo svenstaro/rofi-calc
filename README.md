@@ -6,9 +6,9 @@
 [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/rofi-calc/blob/master/LICENSE)
 [![Stars](https://img.shields.io/github/stars/svenstaro/rofi-calc.svg)](https://github.com/svenstaro/rofi-calc/stargazers)
 
-A [rofi](https://github.com/DaveDavenport/rofi) plugin that uses libqalculate's `qalc` to parse natural language input and provide results.
+A [rofi](https://github.com/DaveDavenport/rofi) plugin that uses qalculate's `qalc` to parse natural language input and provide results.
 
-Since this uses libqalculate's amazing `qalc` you can try natural language queries such `500 + 25%` or `5000 EUR to USD` or `150 to hex`. It can also solve linear equations on the fly. Try `60x + 30 = 50`, for instance.
+Since this uses qalculate's amazing `qalc` you can try natural language queries such `500 + 25%` or `5000 EUR to USD` or `150 to hex`. It can also solve linear equations on the fly. Try `60x + 30 = 50`, for instance.
 
 ![](demo.gif)
 
@@ -31,19 +31,19 @@ The history file by default sits at `$HOME/.local/share/rofi/rofi_calc_history` 
 
 ### From source
 
-You need a C compilation toolchain (a `cc`, `autoconf`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `libqalculate` (version > 2.0).
+You need a C compilation toolchain (a `cc`, `autoconf`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `qalculate` (version > 2.0).
 
-You will also need development headers for `rofi` and `libqalculate`. Depending on your distribution these may be included in different packages:
+You will also need development headers for `rofi`. Depending on your distribution these may be included in different packages:
 
 * Arch Linux, Gentoo: included with `rofi`, `libqalculate`
 * OpenSUSE: `zypper in rofi rofi-devel qalculate`
-* Debian: `dpkg --install rofi-dev qalc libqalculate-dev libtool`
-* Ubuntu: `apt install rofi-dev qalc libqalculate-dev libtool`
-* Solus: `eopkg it rofi-devel libqalculate-devel`
-* CentOS, Fedora: Install `qalculate` `libqalculate-devel` (find `rofi-devel` headers yourself)
+* Debian: `dpkg --install rofi-dev qalc libtool`
+* Ubuntu: `apt install rofi-dev qalc libtool`
+* Solus: `eopkg it rofi-devel libqalculate`
+* CentOS, Fedora: Install `qalculate` (find `rofi-devel` headers yourself)
 * Others: look it up :)
 
-Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `libqalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
+Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `qalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
 
 **rofi-calc** uses autotools as build system. If installing from git, the following steps should install it:
 
