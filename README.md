@@ -2,7 +2,7 @@
 
 **🖩 Do live calculations in rofi!**
 
-[![Build Status](https://travis-ci.com/svenstaro/rofi-calc.svg?branch=master)](https://travis-ci.com/svenstaro/rofi-calc)
+[![GitHub Actions Workflow](https://github.com/svenstaro/rofi-calc/workflows/Build/badge.svg)](https://github.com/svenstaro/rofi-calc/actions)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/rofi-calc/blob/master/LICENSE)
 [![Stars](https://img.shields.io/github/stars/svenstaro/rofi-calc.svg)](https://github.com/svenstaro/rofi-calc/stargazers)
 
@@ -21,6 +21,8 @@ The result of the current input can be selected with `Ctrl+Enter`, and history e
 The history file by default sits at `$HOME/.local/share/rofi/rofi_calc_history` in case you ever need to delete it or change it manually.
 
 ## Installation
+
+<a href="https://repology.org/project/rofi-calc/versions"><img align="right" src="https://repology.org/badge/vertical-allrepos/rofi-calc.svg" alt="Packaging status"></a>
 
 ### Via package manager
 
