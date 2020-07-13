@@ -1,0 +1,24 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build ${{ matrix.rust }} on ${{ matrix.os }} (${{ matrix.target }})
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: |
+        apt install autoconf automake make xutils-dev libpango1.0-dev libcairo2-dev \
+          libstartup-notification0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-util0-dev \
+          libxcb-xinerama0-dev libxcb-xkb-dev libxcb-randr0-dev libxcb1-dev \
+          libxkbcommon-x11-dev libxkbcommon-dev texinfo rofi
+    - run: |
+        autoreconf -i
+        ./configure
+        make
