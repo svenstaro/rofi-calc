@@ -77,7 +77,7 @@ NOTE: `{result}` should be quoted since it may contain characters that your shel
 
 It's convenient to bind it to a key combination in i3. For instance, you could use:
 
-    bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort"
+    bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort > /dev/null"
 
 To disable the bold font applied to the results by default, you can use the flag `-no-bold` and run rofi like:
 
