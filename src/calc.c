@@ -52,18 +52,17 @@ typedef struct
 #define PARENS_RIGHT ')'
 #define EQUALS_SIGN  '='
 
-
 // qalc binary name
 #define QALC_BINARY_OPTION "-qalc-binary"
-
 
 // Calc command option
 #define CALC_COMMAND_OPTION "-calc-command"
 
-
 // Option to disable bold results
 #define NO_BOLD_OPTION "-no-bold"
 
+// Option to disable qalc's unicode mode
+#define NO_UNICODE "-no-unicode"
 
 // Terse option
 #define TERSE_OPTION "-terse"
@@ -507,11 +506,13 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     // Build array of strings that is later fed into a subprocess to actually start qalc with proper parameters.
     GPtrArray *argv = g_ptr_array_new();
     g_ptr_array_add(argv, qalc_binary);
-    g_ptr_array_add(argv, "+u8");
     g_ptr_array_add(argv, "-s");
     g_ptr_array_add(argv, "update_exchange_rates 1days");
     if (find_arg(TERSE_OPTION) > -1) {
         g_ptr_array_add(argv, "-t");
+    }
+    if (find_arg(NO_UNICODE) > -1) {
+        g_ptr_array_add(argv, "+u8");
     }
     g_ptr_array_add(argv, (gchar*)input);
     g_ptr_array_add(argv, NULL);

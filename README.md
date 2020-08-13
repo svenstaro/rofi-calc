@@ -60,11 +60,10 @@ $ make install
 
 ## Advanced Usage
 
-Use the `-qalc-binary` option to specify the name or location of qalculate's `qalc` binary. Defaults to `qalc`.
-
-Use the `-terse` option to reduce the output of `qalc` to just the result of the input expression.
-
-Use the `-calc-command` option to specify a shell command to execute which will be interpolated with the following keys:
+- Use the `-qalc-binary` option to specify the name or location of qalculate's `qalc` binary. Defaults to `qalc`.
+- Use the `-terse` option to reduce the output of `qalc` to just the result of the input expression.
+- Use the `-no-unicode` option to disable `qalc`'s Unicode mode.
+- Use the `-calc-command` option to specify a shell command to execute which will be interpolated with the following keys:
 
 * `{expression}`: the left-side of the equation (currently not available when using `-terse`)
 * `{result}`: the right of the equation
