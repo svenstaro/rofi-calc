@@ -76,30 +76,30 @@ $ make install
 
 - It's convenient to bind it to a key combination in i3. For instance, you could use:
 
-    bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort > /dev/null"
+        bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort > /dev/null"
 
 - To disable the bold font applied to the results by default, you can use the flag `-no-bold` and run rofi like:
 
-    rofi -show calc -modi calc -no-show-match -no-sort -no-bold
+        rofi -show calc -modi calc -no-show-match -no-sort -no-bold
 
 - To disable the history, use `-no-history`:
 
-    rofi -show calc -modi calc -no-show-match -no-sort -no-history
+        rofi -show calc -modi calc -no-show-match -no-sort -no-history
 
 - To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
 
-    > For `,` separator:
+    - For `,` separator:
 
-        digit_grouping=2
+            digit_grouping=2
 
-    > For space separator:
+    - For space separator:
 
-        digit_grouping=1
+            digit_grouping=1
 
 - To use a different output format for numeric representations (for instance, some locales use `,` instead of `.` as a decimal separator),
   set `LC_NUMERIC` to a different value like this:
 
-    LC_NUMERIC=de_DE.UTF-8 rofi -show calc -modi calc -no-show-match -no-sort
+        LC_NUMERIC=de_DE.UTF-8 rofi -show calc -modi calc -no-show-match -no-sort
 
   Make sure the locale is actually available on your system!
 
