@@ -13,3 +13,5 @@ configure
 config.*
 build/
 compile_commands.json
+.vscode
+*.code-workspace
