@@ -42,7 +42,9 @@ G_MODULE_EXPORT Mode mode;
 typedef struct
 {
     char* cmd;
-    char* last_result;
+    char *hint_result;
+    char *hint_welcome;
+    char *last_result;
     GPtrArray* history;
 } CALCModePrivateData;
 
@@ -67,6 +69,13 @@ typedef struct
 // Terse option
 #define TERSE_OPTION "-terse"
 
+// Option to specify result hint
+#define HINT_RESULT "-hint-result"
+#define HINT_RESULT_STR "Result: "
+
+// Option to specify welcome hint
+#define HINT_WELCOME "-hint-welcome"
+#define HINT_WELCOME_STR "Calculator"
 
 // The following keys can be specified in `CALC_COMMAND_FLAG` and
 // will be replaced with the left-hand side and right-hand side of
@@ -231,6 +240,14 @@ static void get_calc(Mode* sw)
     if (find_arg_str(CALC_COMMAND_OPTION, &cmd)) {
         pd->cmd = g_strdup(cmd);
     }
+
+    pd->hint_result = find_arg_str(HINT_RESULT, &cmd) 
+        ? g_strdup(cmd) 
+        : HINT_RESULT_STR;
+
+    pd->hint_welcome = find_arg_str(HINT_WELCOME, &cmd) 
+        ? g_strdup(cmd) 
+        : HINT_WELCOME_STR;
 
     if (find_arg(NO_HISTORY_OPTION) == -1) {
         // Load old history if it exists.
@@ -536,10 +553,16 @@ static char *calc_get_message ( const Mode *sw )
     if (is_error_string(pd->last_result)) {
         return g_markup_printf_escaped("<span foreground='PaleVioletRed'>%s</span>", pd->last_result);
     }
-    if (find_arg(NO_BOLD_OPTION) == -1)
-        return g_markup_printf_escaped("Result: <b>%s</b>", pd->last_result);
-    else
-        return g_markup_printf_escaped("Result: %s", pd->last_result);
+    g_message("RESULT %s", *pd->last_result ? pd->last_result : "?????");
+
+    if (*pd->last_result) {
+        if (find_arg(NO_BOLD_OPTION) == -1)
+            return g_markup_printf_escaped("%s<b>%s</b>", pd->hint_result, pd->last_result);
+        else
+            return g_markup_printf_escaped("%s%s", pd->hint_result, pd->last_result);
+    } else {
+        return g_markup_printf_escaped("%s", pd->hint_welcome);
+    }
 }
 
 Mode mode =
