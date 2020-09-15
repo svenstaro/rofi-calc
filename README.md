@@ -107,6 +107,9 @@ $ make install
 
   Make sure the locale is actually available on your system!
 
+- Use the `-hint-result` option to specify the text of the hint before result.
+- Use the `-hint-welcome` option to specify the welcome text.
+
 ## Development
 
 If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
