@@ -553,7 +553,6 @@ static char *calc_get_message ( const Mode *sw )
     if (is_error_string(pd->last_result)) {
         return g_markup_printf_escaped("<span foreground='PaleVioletRed'>%s</span>", pd->last_result);
     }
-    g_message("RESULT %s", *pd->last_result ? pd->last_result : "?????");
 
     if (*pd->last_result) {
         if (find_arg(NO_BOLD_OPTION) == -1)
