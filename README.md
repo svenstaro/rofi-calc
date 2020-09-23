@@ -100,6 +100,10 @@ $ make install
   set `LC_NUMERIC` to a different value like this:
 
         LC_NUMERIC=de_DE.UTF-8 rofi -show calc -modi calc -no-show-match -no-sort
+        
+- To set a different default locale, set your `LC_MONETARY` variable:
+
+        LC_MONETARY=de_DE.UTF-8 rofi -show calc -modi calc -no-show-match -no-sort
 
   Make sure the locale is actually available on your system!
 
