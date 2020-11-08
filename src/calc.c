@@ -241,12 +241,12 @@ static void get_calc(Mode* sw)
         pd->cmd = g_strdup(cmd);
     }
 
-    pd->hint_result = find_arg_str(HINT_RESULT, &cmd) 
-        ? g_strdup(cmd) 
+    pd->hint_result = find_arg_str(HINT_RESULT, &cmd)
+        ? g_strdup(cmd)
         : HINT_RESULT_STR;
 
-    pd->hint_welcome = find_arg_str(HINT_WELCOME, &cmd) 
-        ? g_strdup(cmd) 
+    pd->hint_welcome = find_arg_str(HINT_WELCOME, &cmd)
+        ? g_strdup(cmd)
         : HINT_WELCOME_STR;
 
     if (find_arg(NO_HISTORY_OPTION) == -1) {
