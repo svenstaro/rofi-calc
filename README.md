@@ -19,6 +19,7 @@ Run rofi like:
 The result of the current input can be selected with `Ctrl+Enter`, and history entries can be selected with `Enter`. By default this will just output the equation/result.
 
 The history file by default sits at `$HOME/.local/share/rofi/rofi_calc_history` in case you ever need to delete it or change it manually.
+You can disable persistent history if you don't like that.
 
 ## Installation
 
@@ -82,9 +83,19 @@ $ make install
 
         rofi -show calc -modi calc -no-show-match -no-sort -no-bold
 
-- To disable the history, use `-no-history`:
+- To disable persistent history, use `-no-persist-history`:
 
-        rofi -show calc -modi calc -no-show-match -no-sort -no-history
+        rofi -show calc -modi calc -no-show-match -no-sort -no-persist-history
+
+    This will disable writing and loading the history file and thus you'll lose and entered entries
+    upon quitting rofi-calc.
+
+- To disable the history entirely, use `-no-history`:
+
+        rofi -show calc -modi calc -no-show-match -no-sort -no-history -lines 0
+
+    The benefit of this is that you can simply enter a term and press return and that'll already
+    act on the result by printing it to stdout or via `-calc-command` if configured.
 
 - To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
 
@@ -100,7 +111,7 @@ $ make install
   set `LC_NUMERIC` to a different value like this:
 
         LC_NUMERIC=de_DE.UTF-8 rofi -show calc -modi calc -no-show-match -no-sort
-        
+
 - To set a different default locale, set your `LC_MONETARY` variable:
 
         LC_MONETARY=de_DE.UTF-8 rofi -show calc -modi calc -no-show-match -no-sort

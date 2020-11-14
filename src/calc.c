@@ -83,12 +83,10 @@ typedef struct
 #define EQUATION_LHS_KEY "{expression}"
 #define EQUATION_RHS_KEY "{result}"
 
-
 // History stuff
+#define NO_PERSIST_HISTORY_OPTION "-no-persist-history"
 #define NO_HISTORY_OPTION "-no-history"
-#define NO_HISTORY_FULL_OPTION "-no-history-full"
 #define HISTORY_LENGTH 100
-
 
 // Limit `str` to at most `limit` new lines.
 // Returns a new string of either the limited length or the length length.
@@ -250,7 +248,7 @@ static void get_calc(Mode* sw)
         ? g_strdup(cmd)
         : HINT_WELCOME_STR;
 
-    if (find_arg(NO_HISTORY_OPTION) == -1 && find_arg(NO_HISTORY_FULL_OPTION) == -1) {
+    if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1 && find_arg(NO_HISTORY_OPTION) == -1) {
         // Load old history if it exists.
         GError *error = NULL;
         gchar* history_file = g_build_filename(g_get_user_data_dir(), "rofi", "rofi_calc_history", NULL);
@@ -397,18 +395,18 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         retv = PREVIOUS_DIALOG;
     } else if (menu_entry & MENU_QUICK_SWITCH) {
         retv = (menu_entry & MENU_LOWER_MASK);
-    } else if ((menu_entry & MENU_OK) && (selected_line == 0 && find_arg(NO_HISTORY_FULL_OPTION) == -1)) {
+    } else if ((menu_entry & MENU_OK) && (selected_line == 0 && find_arg(NO_HISTORY_OPTION) == -1)) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
             char* history_entry = g_strdup_printf("%s", pd->last_result);
             g_ptr_array_add(pd->history, (gpointer) history_entry);
-            if (find_arg(NO_HISTORY_OPTION) == -1) {
+            if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
                 append_str_to_history(history_entry);
             }
         }
         retv = RELOAD_DIALOG;
-    } else if ((menu_entry & MENU_OK) && (selected_line > 0 || find_arg(NO_HISTORY_FULL_OPTION) != -1)) {
+    } else if ((menu_entry & MENU_OK) && (selected_line > 0 || find_arg(NO_HISTORY_OPTION) != -1)) {
         char *entry;
-        if (find_arg(NO_HISTORY_FULL_OPTION) != -1)
+        if (find_arg(NO_HISTORY_OPTION) != -1)
             entry = pd->last_result;
         else
             entry = g_ptr_array_index(pd->history, get_real_history_index(pd->history, selected_line));
@@ -425,7 +423,7 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
     } else if (menu_entry & MENU_ENTRY_DELETE) {
         if (selected_line > 0) {
             g_ptr_array_remove_index(pd->history, get_real_history_index(pd->history, selected_line));
-            if (find_arg(NO_HISTORY_OPTION) == -1 && find_arg(NO_HISTORY_FULL_OPTION) == -1) {
+            if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1 && find_arg(NO_HISTORY_OPTION) == -1) {
                 delete_line_from_history(selected_line - 1);
             }
         }
@@ -464,7 +462,7 @@ static char* calc_get_display_value(const Mode* sw, unsigned int selected_line, 
     }
 
     if (selected_line == 0) {
-        if (find_arg(NO_HISTORY_FULL_OPTION) == -1)
+        if (find_arg(NO_HISTORY_OPTION) == -1)
             return g_strdup("Add to history");
         else
             return g_strdup("");
