@@ -45,6 +45,7 @@ typedef struct
     char *hint_result;
     char *hint_welcome;
     char *last_result;
+    char *previous_input;
     GPtrArray* history;
 } CALCModePrivateData;
 
@@ -234,6 +235,7 @@ static void get_calc(Mode* sw)
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
+    pd->previous_input = g_strdup(""); // providing initial value
 
     char *cmd = NULL;
     if (find_arg_str(CALC_COMMAND_OPTION, &cmd)) {
@@ -522,37 +524,43 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
-    char *qalc_binary = "qalc";
-    if (find_arg(QALC_BINARY_OPTION) >= 0) {
-        find_arg_str(QALC_BINARY_OPTION, &qalc_binary);
+    if ( strcmp(input, pd->previous_input) != 0 ) {
+        strcpy(pd->previous_input, input);
+        char *qalc_binary = "qalc";
+        if (find_arg(QALC_BINARY_OPTION) >= 0) {
+            find_arg_str(QALC_BINARY_OPTION, &qalc_binary);
+        }
+
+        // Build array of strings that is later fed into a subprocess to actually start qalc with proper parameters.
+        GPtrArray *argv = g_ptr_array_new();
+        g_ptr_array_add(argv, qalc_binary);
+        g_ptr_array_add(argv, "-s");
+        g_ptr_array_add(argv, "update_exchange_rates 1days");
+        if (find_arg(TERSE_OPTION) > -1) {
+            g_ptr_array_add(argv, "-t");
+        }
+        if (find_arg(NO_UNICODE) > -1) {
+            g_ptr_array_add(argv, "+u8");
+        }
+        g_ptr_array_add(argv, (gchar*)input);
+        g_ptr_array_add(argv, NULL);
+
+        GSubprocess* process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+        g_ptr_array_free(argv, TRUE);
+
+        if (error != NULL) {
+            g_error("Spawning child failed: %s", error->message);
+            g_error_free(error);
+        }
+
+        g_subprocess_wait_check_async(process, NULL, process_cb, (gpointer)&pd->last_result);
+
+        return g_strdup(input);
+    } else {
+        return g_strdup(pd->previous_input);
     }
-
-    // Build array of strings that is later fed into a subprocess to actually start qalc with proper parameters.
-    GPtrArray *argv = g_ptr_array_new();
-    g_ptr_array_add(argv, qalc_binary);
-    g_ptr_array_add(argv, "-s");
-    g_ptr_array_add(argv, "update_exchange_rates 1days");
-    if (find_arg(TERSE_OPTION) > -1) {
-        g_ptr_array_add(argv, "-t");
-    }
-    if (find_arg(NO_UNICODE) > -1) {
-        g_ptr_array_add(argv, "+u8");
-    }
-    g_ptr_array_add(argv, (gchar*)input);
-    g_ptr_array_add(argv, NULL);
-
-    GSubprocess* process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
-    g_ptr_array_free(argv, TRUE);
-
-    if (error != NULL) {
-        g_error("Spawning child failed: %s", error->message);
-        g_error_free(error);
-    }
-
-    g_subprocess_wait_check_async(process, NULL, process_cb, (gpointer)&pd->last_result);
-
-    return g_strdup(input);
 }
+
 
 static char *calc_get_message ( const Mode *sw )
 {
