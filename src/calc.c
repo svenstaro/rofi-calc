@@ -529,19 +529,31 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
 
     // Build array of strings that is later fed into a subprocess to actually start qalc with proper parameters.
     GPtrArray *argv = g_ptr_array_new();
-    g_ptr_array_add(argv, qalc_binary);
-    g_ptr_array_add(argv, "-s");
-    g_ptr_array_add(argv, "update_exchange_rates 1days");
-    if (find_arg(TERSE_OPTION) > -1) {
-        g_ptr_array_add(argv, "-t");
-    }
-    if (find_arg(NO_UNICODE) > -1) {
-        g_ptr_array_add(argv, "+u8");
-    }
-    g_ptr_array_add(argv, (gchar*)input);
-    g_ptr_array_add(argv, NULL);
+    
+    GSubprocess* process;
 
-    GSubprocess* process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    // Handle edge case where qalc segfaults when "det([" or "det([[" are inputted
+    if(strcmp(input, "det([[") == 0 || strcmp(input, "det([") == 0) {
+        g_ptr_array_add(argv, (gchar*)"echo");
+        g_ptr_array_add(argv, (gchar*)"invalid input");
+        g_ptr_array_add(argv, NULL);
+        process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    }
+    else {
+        g_ptr_array_add(argv, qalc_binary);
+        g_ptr_array_add(argv, "-s");
+        g_ptr_array_add(argv, "update_exchange_rates 1days");
+        if (find_arg(TERSE_OPTION) > -1) {
+            g_ptr_array_add(argv, "-t");
+        }
+        if (find_arg(NO_UNICODE) > -1) {
+            g_ptr_array_add(argv, "+u8");
+        }
+        g_ptr_array_add(argv, (gchar*)input);
+        g_ptr_array_add(argv, NULL);
+        process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    }
+
     g_ptr_array_free(argv, TRUE);
 
     if (error != NULL) {
