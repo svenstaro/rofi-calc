@@ -53,6 +53,7 @@ typedef struct
 #define PARENS_LEFT  '('
 #define PARENS_RIGHT ')'
 #define EQUALS_SIGN  '='
+#define APPROX_SIGN  "≈"
 
 // qalc binary name
 #define QALC_BINARY_OPTION "-qalc-binary"
@@ -333,18 +334,25 @@ static char** split_equation(char* string)
 
     int parens_depth = 0;
     char* curr = string;
+    int delimiter_len = 0;
 
     // Iterate through and track our level of nestedness, stopping when
     // we've hit an equals sign not inside other parentheses.
     // At this point we can set the NULL character to split the string
-    // into `string` and `curr + 1`.
+    // into `string` and `curr + delimiter_len`.
     while (*curr) {
         if (*curr == PARENS_LEFT) {
             parens_depth++;
         } else if (*curr == PARENS_RIGHT) {
             parens_depth--;
-        } else if (*curr == EQUALS_SIGN && parens_depth == 0) {
-            break;
+        } else if (parens_depth == 0) {
+            if (*curr == EQUALS_SIGN) {
+                delimiter_len = 1;
+                break;
+            } else if (!strncmp(curr, APPROX_SIGN, strlen(APPROX_SIGN))) {
+                delimiter_len = strlen(APPROX_SIGN);
+                break;
+            }
         }
         curr++;
     }
@@ -353,7 +361,7 @@ static char** split_equation(char* string)
     // Strip trailing whitespace with `g_strchomp()` from the left.
     // Strip leading whitespace with `g_strchug()` from the right.
     result[0] = g_strchomp(string);
-    result[1] = g_strchug(curr + 1);
+    result[1] = g_strchug(curr + delimiter_len);
 
     return result;
 }
