@@ -80,6 +80,8 @@ $ make install
     
         rofi -modi calc -show calc -calc-command 'xdotool type --clearmodifiers "{result}"'
 
+- The `-calc-command-history` option will additionally add the output of `qalc` to history when the `-calc-command` is run.
+    This will have no effect if `-no-history` is enabled.
 - It's convenient to bind it to a key combination in i3. For instance, you could use:
 
         bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort > /dev/null"
