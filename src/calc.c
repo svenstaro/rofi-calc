@@ -336,17 +336,18 @@ static char** split_equation(char* string)
     }
 
     int parens_depth = 0;
-    char* curr = string;
+    char* curr = string + strlen(string);
     int delimiter_len = 0;
 
     // Iterate through and track our level of nestedness, stopping when
     // we've hit an equals sign not inside other parentheses.
     // At this point we can set the NULL character to split the string
     // into `string` and `curr + delimiter_len`.
-    while (*curr) {
-        if (*curr == PARENS_LEFT) {
+    while (curr != string) {
+        curr--;
+        if (*curr == PARENS_RIGHT) {
             parens_depth++;
-        } else if (*curr == PARENS_RIGHT) {
+        } else if (*curr == PARENS_LEFT) {
             parens_depth--;
         } else if (parens_depth == 0) {
             if (*curr == EQUALS_SIGN) {
@@ -357,14 +358,22 @@ static char** split_equation(char* string)
                 break;
             }
         }
-        curr++;
     }
-    *curr = '\0';
 
-    // Strip trailing whitespace with `g_strchomp()` from the left.
-    // Strip leading whitespace with `g_strchug()` from the right.
-    result[0] = g_strchomp(string);
-    result[1] = g_strchug(curr + delimiter_len);
+    if (curr == string) {
+        // No equals signs were found. Shouldn't happen, but if it does treat
+        // the entire expression as the result.
+        result[0] = NULL;
+        result[1] = g_strdup(string);
+    } else {
+        // We found an equals sign; set it to null to split the string in two.
+        *curr = '\0';
+
+        // Strip trailing whitespace with `g_strchomp()` from the left.
+        // Strip leading whitespace with `g_strchug()` from the right.
+        result[0] = g_strchomp(string);
+        result[1] = g_strchug(curr + delimiter_len);
+    }
 
     return result;
 }
