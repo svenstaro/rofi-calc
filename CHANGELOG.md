@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - ReleaseDate
 
+## [2.0.1] - 2022-02-06
+- Correctly handle ≈ signs emitted by qalc [#78](https://github.com/svenstaro/rofi-calc/pull/78) (thanks @SabrinaJewson)
+
 ## [2.0.0] - 2020-11-14
 - Add option to completely disable history [#63](https://github.com/svenstaro/rofi-calc/pull/63) (thanks @UnkwUsr)
 
