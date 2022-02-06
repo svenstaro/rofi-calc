@@ -74,10 +74,10 @@ $ make install
     NOTE: `{result}` should be quoted since it may contain characters that your shell would otherwise interpret:
 
         rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo -n '{result}' | xclip"
-    
+
     Alternatively, this example would immediately type out the result (using `xdotool`) wherever your cursor currently is
     (upon pressing Control+Return/`-kb-accept-custom`):
-    
+
         rofi -modi calc -show calc -calc-command 'xdotool type --clearmodifiers "{result}"'
 
 - It's convenient to bind it to a key combination in i3. For instance, you could use:
@@ -130,4 +130,9 @@ $ make install
 
 If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
 
-    rofi -plugin-path build/.libs -show calc -modi calc -no-show-match -no-sort
+    autoreconf -i
+    mkdir build
+    cd build
+    ../configure
+    make
+    rofi -plugin-path .libs -show calc -modi calc -no-show-match -no-sort
