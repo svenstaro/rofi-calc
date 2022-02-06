@@ -61,6 +61,9 @@ typedef struct
 // Calc command option
 #define CALC_COMMAND_OPTION "-calc-command"
 
+// Whether calc command emits a history entry
+#define CALC_COMMAND_USES_HISTORY "-calc-command-history"
+
 // Option to disable bold results
 #define NO_BOLD_OPTION "-no-bold"
 
@@ -423,6 +426,14 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         retv = MODE_EXIT;
     } else if (menu_entry & MENU_CUSTOM_INPUT) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
+            if (find_arg(NO_HISTORY_OPTION) == -1 && find_arg(CALC_COMMAND_USES_HISTORY) != -1) {
+                char* history_entry = g_strdup_printf("%s", pd->last_result);
+                g_ptr_array_add(pd->history, (gpointer) history_entry);
+                if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
+                    append_str_to_history(history_entry);
+                }
+            }
+
             execsh(pd->cmd, pd->last_result);
             retv = MODE_EXIT;
         } else {
