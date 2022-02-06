@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.1] - 2022-02-06
 - Correctly handle ≈ signs emitted by qalc [#78](https://github.com/svenstaro/rofi-calc/pull/78) (thanks @SabrinaJewson)
+- Add `-calc-command-history` to add result to history when using `-calc-command` [#79](https://github.com/svenstaro/rofi-calc/pull/79) (thanks @SabrinaJewson)
 
 ## [2.0.0] - 2020-11-14
 - Add option to completely disable history [#63](https://github.com/svenstaro/rofi-calc/pull/63) (thanks @UnkwUsr)
