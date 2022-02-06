@@ -75,6 +75,13 @@ $ make install
 
         rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo -n '{result}' | xclip"
 
+    Alternatively, this example would immediately type out the result (using `xdotool`) wherever your cursor currently is
+    (upon pressing Control+Return/`-kb-accept-custom`):
+
+        rofi -modi calc -show calc -calc-command 'xdotool type --clearmodifiers "{result}"'
+
+- The `-calc-command-history` option will additionally add the output of `qalc` to history when the `-calc-command` is run.
+    This will have no effect if `-no-history` is enabled.
 - It's convenient to bind it to a key combination in i3. For instance, you could use:
 
         bindsym $mod+c exec --no-startup-id "rofi -show calc -modi calc -no-show-match -no-sort > /dev/null"
@@ -125,4 +132,9 @@ $ make install
 
 If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
 
-    rofi -plugin-path build/.libs -show calc -modi calc -no-show-match -no-sort
+    autoreconf -i
+    mkdir build
+    cd build
+    ../configure
+    make
+    rofi -plugin-path .libs -show calc -modi calc -no-show-match -no-sort

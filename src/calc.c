@@ -54,12 +54,16 @@ typedef struct
 #define PARENS_LEFT  '('
 #define PARENS_RIGHT ')'
 #define EQUALS_SIGN  '='
+#define APPROX_SIGN  "≈"
 
 // qalc binary name
 #define QALC_BINARY_OPTION "-qalc-binary"
 
 // Calc command option
 #define CALC_COMMAND_OPTION "-calc-command"
+
+// Whether calc command emits a history entry
+#define CALC_COMMAND_USES_HISTORY "-calc-command-history"
 
 // Option to disable bold results
 #define NO_BOLD_OPTION "-no-bold"
@@ -334,28 +338,44 @@ static char** split_equation(char* string)
     }
 
     int parens_depth = 0;
-    char* curr = string;
+    char* curr = string + strlen(string);
+    int delimiter_len = 0;
 
     // Iterate through and track our level of nestedness, stopping when
     // we've hit an equals sign not inside other parentheses.
     // At this point we can set the NULL character to split the string
-    // into `string` and `curr + 1`.
-    while (*curr) {
-        if (*curr == PARENS_LEFT) {
+    // into `string` and `curr + delimiter_len`.
+    while (curr != string) {
+        curr--;
+        if (*curr == PARENS_RIGHT) {
             parens_depth++;
-        } else if (*curr == PARENS_RIGHT) {
+        } else if (*curr == PARENS_LEFT) {
             parens_depth--;
-        } else if (*curr == EQUALS_SIGN && parens_depth == 0) {
-            break;
+        } else if (parens_depth == 0) {
+            if (*curr == EQUALS_SIGN) {
+                delimiter_len = 1;
+                break;
+            } else if (!strncmp(curr, APPROX_SIGN, strlen(APPROX_SIGN))) {
+                delimiter_len = strlen(APPROX_SIGN);
+                break;
+            }
         }
-        curr++;
     }
-    *curr = '\0';
 
-    // Strip trailing whitespace with `g_strchomp()` from the left.
-    // Strip leading whitespace with `g_strchug()` from the right.
-    result[0] = g_strchomp(string);
-    result[1] = g_strchug(curr + 1);
+    if (curr == string) {
+        // No equals signs were found. Shouldn't happen, but if it does treat
+        // the entire expression as the result.
+        result[0] = NULL;
+        result[1] = g_strdup(string);
+    } else {
+        // We found an equals sign; set it to null to split the string in two.
+        *curr = '\0';
+
+        // Strip trailing whitespace with `g_strchomp()` from the left.
+        // Strip leading whitespace with `g_strchug()` from the right.
+        result[0] = g_strchomp(string);
+        result[1] = g_strchug(curr + delimiter_len);
+    }
 
     return result;
 }
@@ -417,6 +437,14 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         retv = MODE_EXIT;
     } else if (menu_entry & MENU_CUSTOM_INPUT) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
+            if (find_arg(NO_HISTORY_OPTION) == -1 && find_arg(CALC_COMMAND_USES_HISTORY) != -1) {
+                char* history_entry = g_strdup_printf("%s", pd->last_result);
+                g_ptr_array_add(pd->history, (gpointer) history_entry);
+                if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
+                    append_str_to_history(history_entry);
+                }
+            }
+
             execsh(pd->cmd, pd->last_result);
             retv = MODE_EXIT;
         } else {
