@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - ReleaseDate
 
-## [2.0.1] - 2022-02-06
+## [2.1.0] - 2022-02-06
 - Correctly handle ≈ signs emitted by qalc [#78](https://github.com/svenstaro/rofi-calc/pull/78) (thanks @SabrinaJewson)
 - Add `-calc-command-history` to add result to history when using `-calc-command` [#79](https://github.com/svenstaro/rofi-calc/pull/79) (thanks @SabrinaJewson)
 - Correctly handle multiple equals signs emitted by qalc [#80](https://github.com/svenstaro/rofi-calc/pull/78) (thanks @SabrinaJewson)
