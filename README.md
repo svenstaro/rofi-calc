@@ -104,6 +104,10 @@ $ make install
     The benefit of this is that you can simply enter a term and press return and that'll already
     act on the result by printing it to stdout or via `-calc-command` if configured.
 
+- To automatically save last calculation to the history on rofi close, use `-automatic-save-to-history`:
+
+        rofi -show calc -modi calc -no-show-match -no-sort --automatic-save-to-history
+
 - To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
 
     - For `,` separator:
