@@ -40,7 +40,7 @@ You will also need development headers for `rofi`. Depending on your distributio
 
 * Arch Linux, Gentoo: included with `rofi`, `libqalculate`
 * OpenSUSE: `zypper in rofi rofi-devel qalculate`
-* Debian: `dpkg --install rofi-dev qalc libtool`
+* Debian: `apt install rofi-dev qalc libtool libtool-bin`
 * Ubuntu: `apt install rofi-dev qalc libtool`
 * Solus: `eopkg it rofi-devel libqalculate`
 * CentOS, Fedora: Install `qalculate` (find `rofi-devel` headers yourself)
@@ -51,6 +51,7 @@ Some distributions ship an [extremely outdated](https://github.com/svenstaro/rof
 **rofi-calc** uses autotools as build system. If installing from git, the following steps should install it:
 
 ```bash
+$ git clone https://github.com/svenstaro/rofi-calc.git
 $ autoreconf -i
 $ mkdir build
 $ cd build/
