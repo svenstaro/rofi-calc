@@ -552,11 +552,13 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
-    if ( strcmp(input, pd->previous_input) == 0 ) {
+    if (strcmp(input, pd->previous_input) == 0) {
         return g_strdup(pd->previous_input);
     }
 
-    strcpy(pd->previous_input, input);
+    g_free(pd->previous_input);
+    pd->previous_input = g_strdup(input);
+
     char *qalc_binary = "qalc";
     if (find_arg(QALC_BINARY_OPTION) >= 0) {
         find_arg_str(QALC_BINARY_OPTION, &qalc_binary);
