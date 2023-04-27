@@ -91,6 +91,7 @@ typedef struct
 // History stuff
 #define NO_PERSIST_HISTORY_OPTION "-no-persist-history"
 #define NO_HISTORY_OPTION "-no-history"
+#define AUTOMATIC_SAVE_TO_HISTORY "-automatic-save-to-history"
 #define HISTORY_LENGTH 100
 
 // Limit `str` to at most `limit` new lines.
@@ -161,7 +162,6 @@ static void append_str_to_history(gchar* input) {
     g_free(history_file);
     g_free(history_dir);
 }
-
 
 // Count number of new lines in a string.
 static uint32_t get_number_of_newlines(gchar* string, gsize length) {
@@ -321,6 +321,16 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
 }
 
 
+static void append_last_result_to_history(CALCModePrivateData* pd) {
+    if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
+        char* history_entry = g_strdup_printf("%s", pd->last_result);
+        g_ptr_array_add(pd->history, (gpointer) history_entry);
+        if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
+            append_str_to_history(history_entry);
+        }
+    }
+}
+
 // Split the equation result into the left (expression) and right (result) side
 // of the equals sign.
 //
@@ -418,13 +428,7 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
     } else if (menu_entry & MENU_QUICK_SWITCH) {
         retv = (menu_entry & MENU_LOWER_MASK);
     } else if ((menu_entry & MENU_OK) && (selected_line == 0 && find_arg(NO_HISTORY_OPTION) == -1)) {
-        if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
-            char* history_entry = g_strdup_printf("%s", pd->last_result);
-            g_ptr_array_add(pd->history, (gpointer) history_entry);
-            if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
-                append_str_to_history(history_entry);
-            }
-        }
+        append_last_result_to_history(pd);
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && (selected_line > 0 || find_arg(NO_HISTORY_OPTION) != -1)) {
         char *entry;
@@ -477,6 +481,10 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
 static void calc_mode_destroy(Mode* sw)
 {
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
+    if (find_arg(AUTOMATIC_SAVE_TO_HISTORY) != -1) {
+        append_last_result_to_history(pd);
+    }
+
     if (pd != NULL) {
         g_free(pd);
         mode_set_private_data(sw, NULL);
