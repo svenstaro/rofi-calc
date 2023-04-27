@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - ReleaseDate
 - Fix high CPU usage when input isn't empty [#66](https://github.com/svenstaro/rofi-calc/pull/66) (thanks @bootstrap-prime)
+- Add `-automatic-save-to-history` option [#87](https://github.com/svenstaro/rofi-calc/pull/87) (thanks @matejdro)
 
 ## [2.1.0] - 2022-02-06
 - Correctly handle ≈ signs emitted by qalc [#78](https://github.com/svenstaro/rofi-calc/pull/78) (thanks @SabrinaJewson)

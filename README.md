@@ -16,7 +16,7 @@ Run rofi like:
 
     rofi -show calc -modi calc -no-show-match -no-sort
 
-The result of the current input can be selected with `Ctrl+Enter`, and history entries can be selected with `Enter`. By default this will just output the equation/result.
+The result of the current input can be selected with `Ctrl+Return`, and history entries can be selected with `Return`. By default this will just output the equation/result.
 
 The history file by default sits at `$HOME/.local/share/rofi/rofi_calc_history` in case you ever need to delete it or change it manually.
 You can disable persistent history if you don't like that.
@@ -102,12 +102,14 @@ $ make install
 
         rofi -show calc -modi calc -no-show-match -no-sort -no-history -lines 0
 
-    The benefit of this is that you can simply enter a term and press return and that'll already
+    The benefit of this is that you can simply enter a term and press `Return` and that'll already
     act on the result by printing it to stdout or via `-calc-command` if configured.
 
-- To automatically save last calculation to the history on rofi close, use `-automatic-save-to-history`:
+- To automatically save last calculation to the history on rofi close, use `-automatic-save-to-history`.:
 
-        rofi -show calc -modi calc -no-show-match -no-sort --automatic-save-to-history
+        rofi -show calc -modi calc -no-show-match -no-sort -automatic-save-to-history
+
+    This means that calculations are put into history even if you don't press `Return`.
 
 - To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
 
