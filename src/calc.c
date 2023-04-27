@@ -45,6 +45,7 @@ typedef struct
     char *hint_result;
     char *hint_welcome;
     char *last_result;
+    char *previous_input;
     GPtrArray* history;
 } CALCModePrivateData;
 
@@ -238,6 +239,7 @@ static void get_calc(Mode* sw)
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     pd->last_result = g_strdup("");
     pd->history = g_ptr_array_new();
+    pd->previous_input = g_strdup(""); // providing initial value
 
     char *cmd = NULL;
     if (find_arg_str(CALC_COMMAND_OPTION, &cmd)) {
@@ -550,6 +552,11 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
+    if ( strcmp(input, pd->previous_input) == 0 ) {
+        return g_strdup(pd->previous_input);
+    }
+
+    strcpy(pd->previous_input, input);
     char *qalc_binary = "qalc";
     if (find_arg(QALC_BINARY_OPTION) >= 0) {
         find_arg_str(QALC_BINARY_OPTION, &qalc_binary);
@@ -581,6 +588,7 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
 
     return g_strdup(input);
 }
+
 
 static char *calc_get_message ( const Mode *sw )
 {
