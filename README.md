@@ -52,6 +52,7 @@ Some distributions ship an [extremely outdated](https://github.com/svenstaro/rof
 
 ```bash
 $ git clone https://github.com/svenstaro/rofi-calc.git
+$ cd rofi-calc/
 $ mkdir m4
 $ autoreconf -i
 $ mkdir build
