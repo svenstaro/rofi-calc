@@ -27,7 +27,7 @@ You can disable persistent history if you don't like that.
 
 ### Via package manager
 
-* [Arch Linux](https://www.archlinux.org/packages/community/x86_64/rofi-calc/)
+* [Arch Linux](https://archlinux.org/packages/extra/x86_64/rofi-calc/)
 * [FreeBSD](https://www.freshports.org/x11/rofi-calc/)
 * [Gentoo](https://packages.gentoo.org/packages/x11-misc/rofi-calc)
 * [openSUSE](https://software.opensuse.org/package/rofi-calc)
