@@ -137,6 +137,26 @@ $ make install
 - Use the `-hint-result` option to specify the text of the hint before result.
 - Use the `-hint-welcome` option to specify the welcome text.
 
+## Custom Rofi Theme compatibility
+
+If you are using a custom theme with rofi (e.g. `rofi -show drun -theme ~/.config/rofi/mytheme.rasi`) and don't see the result of the calculation, that's because the rofi-calc mode relies on the `message` widget that might be hidden by some themes.
+
+In your `mytheme.rasi` file or any file, it might `@import`, look for the following
+```
+mainbox {
+    children: [...]
+}
+```
+make sure the list contains `message`<br>
+for example 
+```
+mainbox {
+    children: [inputbar, message, listview]
+}
+```
+Reference Rofi docs: [Layout](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown#layout), [Base Widgets](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown#base-widgets), [Children](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown#children)
+
+
 ## Development
 
 If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
