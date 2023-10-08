@@ -407,7 +407,7 @@ static void execsh(char* cmd, char* entry)
             NULL);
     g_free(parts);
 
-    gchar *escaped_cmd = g_strescape(user_cmd, NULL);
+    gchar *escaped_cmd = g_strescape(user_cmd, "·−×√²³⊻↊↋¬°");
     gchar *complete_cmd = g_strdup_printf("/bin/sh -c \"%s\"", escaped_cmd);
     g_free(user_cmd);
     g_free(escaped_cmd);
