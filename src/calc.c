@@ -407,7 +407,9 @@ static void execsh(char* cmd, char* entry)
             NULL);
     g_free(parts);
 
-    gchar *escaped_cmd = g_strescape(user_cmd, NULL);
+    // don't escape these utf-8 runes which appear in qalc output, the escape sequences are not recognized by shell (#108)
+    static const char *unescaped_chars = "·−×√²³⊻↊↋¬°";
+    gchar *escaped_cmd = g_strescape(user_cmd, unescaped_chars);
     gchar *complete_cmd = g_strdup_printf("/bin/sh -c \"%s\"", escaped_cmd);
     g_free(user_cmd);
     g_free(escaped_cmd);
