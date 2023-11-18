@@ -59,7 +59,7 @@ $ mkdir build
 $ cd build/
 $ ../configure
 $ make
-$ make install
+# make install
 ```
 
 ## Advanced Usage
