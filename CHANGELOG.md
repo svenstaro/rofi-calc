@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - ReleaseDate
+- Fix skip escaping some unicode math symbols [#109](https://github.com/svenstaro/rofi-calc/pull/109) (thanks @arades79)
 
 ## [2.2.0] - 2023-04-27
 - Fix high CPU usage when input isn't empty [#66](https://github.com/svenstaro/rofi-calc/pull/66) (thanks @bootstrap-prime)
