@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - ReleaseDate
+
+## [2.2.0] - 2023-04-27
 - Fix high CPU usage when input isn't empty [#66](https://github.com/svenstaro/rofi-calc/pull/66) (thanks @bootstrap-prime)
 - Add `-automatic-save-to-history` option [#87](https://github.com/svenstaro/rofi-calc/pull/87) (thanks @matejdro)
 
@@ -25,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `-no-unicode` option to disable aforementioned unicode support
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/svenstaro/rofi-calc/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/svenstaro/rofi-calc/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/svenstaro/rofi-calc/compare/v1.9...v2.0.0
 [1.9]: https://github.com/svenstaro/rofi-calc/compare/v1.8...v1.9
