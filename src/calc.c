@@ -531,8 +531,12 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
     g_subprocess_wait_check_finish(process, res, &error);
 
     if (error != NULL) {
-        g_error("Process errored with: %s", error->message);
+        // With qalculate >= 5.0.0, exit status 1 can mean bad (or incomplete) input
+        if (error->domain != G_SPAWN_EXIT_ERROR || error-> code != 1) {
+            g_error("Process errored with: %s", error->message);
+        }
         g_error_free(error);
+        error = NULL;
     }
 
     unsigned int stdout_bufsize = 4096;
@@ -542,6 +546,7 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
     if (error != NULL) {
         g_error("Process errored with: %s", error->message);
         g_error_free(error);
+        error = NULL;
     }
 
     unsigned int line_length = strcspn(stdout_buf, "\n");
@@ -551,6 +556,7 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
     if (error != NULL) {
         g_error("Process errored with: %s", error->message);
         g_error_free(error);
+        error = NULL;
     }
 
     rofi_view_reload();
