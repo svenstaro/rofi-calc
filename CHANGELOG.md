@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - ReleaseDate
+
+## [2.2.1] - 2024-03-28
 - Fix skip escaping some unicode math symbols [#109](https://github.com/svenstaro/rofi-calc/pull/109) (thanks @arades79)
 - Fix functions crashing with libqalculate 5 [#117](https://github.com/svenstaro/rofi-calc/issues/117) (thanks tiosgz)
 
@@ -29,7 +31,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `-no-unicode` option to disable aforementioned unicode support
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/svenstaro/rofi-calc/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/svenstaro/rofi-calc/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/svenstaro/rofi-calc/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/svenstaro/rofi-calc/compare/v1.9...v2.0.0
