@@ -47,6 +47,7 @@ typedef struct
     char *last_result;
     char *previous_input;
     GPtrArray* history;
+    GRegex *plot_re;
 } CALCModePrivateData;
 
 
@@ -279,6 +280,8 @@ static void get_calc(Mode* sw)
 
         g_free(history_file);
     }
+    // If input matches this regex, show a warning and only call qalc when the Enter key is pressed.
+    pd->plot_re = g_regex_new("^\\s*plot\\s*\\(", G_REGEX_OPTIMIZE, G_REGEX_MATCH_DEFAULT, NULL);
 }
 
 
@@ -419,7 +422,87 @@ static void execsh(char* cmd, char* entry)
 }
 
 
-static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** input, unsigned int selected_line)
+// It's a hacky way of making rofi show new window titles.
+extern void rofi_view_reload(void);
+
+
+static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_data)
+{
+    GError *error = NULL;
+    GSubprocess* process = (GSubprocess*)source_object;
+    GInputStream* stdout_stream = g_subprocess_get_stdout_pipe(process);
+    char** last_result = (char**)user_data;
+
+    g_subprocess_wait_check_finish(process, res, &error);
+
+    if (error != NULL) {
+        // With qalculate >= 5.0.0, exit status 1 can mean bad (or incomplete) input
+        if (error->domain != G_SPAWN_EXIT_ERROR || error-> code != 1) {
+            g_error("Process errored with: %s", error->message);
+        }
+        g_error_free(error);
+        error = NULL;
+    }
+
+    unsigned int stdout_bufsize = 4096;
+    char stdout_buf[stdout_bufsize];
+    g_input_stream_read_all(stdout_stream, stdout_buf, stdout_bufsize, NULL, NULL, &error);
+
+    if (error != NULL) {
+        g_error("Process errored with: %s", error->message);
+        g_error_free(error);
+        error = NULL;
+    }
+
+    unsigned int line_length = strcspn(stdout_buf, "\n");
+    *last_result = g_strndup(stdout_buf, line_length);
+    g_input_stream_close(stdout_stream, NULL, &error);
+
+    if (error != NULL) {
+        g_error("Process errored with: %s", error->message);
+        g_error_free(error);
+        error = NULL;
+    }
+
+    rofi_view_reload();
+}
+
+
+static void invoke_qalc(CALCModePrivateData* pd, const char* input)
+{
+    GError *error = NULL;
+    char *qalc_binary = "qalc";
+    if (find_arg(QALC_BINARY_OPTION) >= 0) {
+        find_arg_str(QALC_BINARY_OPTION, &qalc_binary);
+    }
+
+    // Build array of strings that is later fed into a subprocess to actually start qalc with proper parameters.
+    GPtrArray *argv = g_ptr_array_new();
+    g_ptr_array_add(argv, qalc_binary);
+    g_ptr_array_add(argv, "-s");
+    g_ptr_array_add(argv, "update_exchange_rates 1days");
+    if (find_arg(TERSE_OPTION) > -1) {
+        g_ptr_array_add(argv, "-t");
+    }
+    if (find_arg(NO_UNICODE) > -1) {
+        g_ptr_array_add(argv, "+u8");
+    }
+    g_ptr_array_add(argv, (gchar*)input);
+    g_ptr_array_add(argv, NULL);
+
+    GSubprocess* process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
+    g_ptr_array_free(argv, TRUE);
+
+    if (error != NULL) {
+        g_error("Spawning child failed: %s", error->message);
+        g_error_free(error);
+    }
+
+    g_subprocess_wait_check_async(process, NULL, process_cb, (gpointer)&pd->last_result);
+}
+
+
+static ModeMode calc_mode_result(Mode* sw, int menu_entry, char** input, unsigned int selected_line)
 {
     ModeMode retv = MODE_EXIT;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
@@ -429,6 +512,9 @@ static ModeMode calc_mode_result(Mode* sw, int menu_entry, G_GNUC_UNUSED char** 
         retv = PREVIOUS_DIALOG;
     } else if (menu_entry & MENU_QUICK_SWITCH) {
         retv = (menu_entry & MENU_LOWER_MASK);
+    } else if ((menu_entry & MENU_OK) && (selected_line == 0 && pd->plot_re && g_regex_match(pd->plot_re, *input, G_REGEX_MATCH_DEFAULT, NULL))) {
+        invoke_qalc(pd, *input);
+        retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) && (selected_line == 0 && find_arg(NO_HISTORY_OPTION) == -1)) {
         append_last_result_to_history(pd);
         retv = RELOAD_DIALOG;
@@ -517,55 +603,8 @@ static int calc_token_match(G_GNUC_UNUSED const Mode* sw, G_GNUC_UNUSED rofi_int
     return TRUE;
 }
 
-// It's a hacky way of making rofi show new window titles.
-extern void rofi_view_reload(void);
-
-
-static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_data)
-{
-    GError *error = NULL;
-    GSubprocess* process = (GSubprocess*)source_object;
-    GInputStream* stdout_stream = g_subprocess_get_stdout_pipe(process);
-    char** last_result = (char**)user_data;
-
-    g_subprocess_wait_check_finish(process, res, &error);
-
-    if (error != NULL) {
-        // With qalculate >= 5.0.0, exit status 1 can mean bad (or incomplete) input
-        if (error->domain != G_SPAWN_EXIT_ERROR || error-> code != 1) {
-            g_error("Process errored with: %s", error->message);
-        }
-        g_error_free(error);
-        error = NULL;
-    }
-
-    unsigned int stdout_bufsize = 4096;
-    char stdout_buf[stdout_bufsize];
-    g_input_stream_read_all(stdout_stream, stdout_buf, stdout_bufsize, NULL, NULL, &error);
-
-    if (error != NULL) {
-        g_error("Process errored with: %s", error->message);
-        g_error_free(error);
-        error = NULL;
-    }
-
-    unsigned int line_length = strcspn(stdout_buf, "\n");
-    *last_result = g_strndup(stdout_buf, line_length);
-    g_input_stream_close(stdout_stream, NULL, &error);
-
-    if (error != NULL) {
-        g_error("Process errored with: %s", error->message);
-        g_error_free(error);
-        error = NULL;
-    }
-
-    rofi_view_reload();
-}
-
-
 static char* calc_preprocess_input(Mode* sw, const char* input)
 {
-    GError *error = NULL;
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
 
     if (strcmp(input, pd->previous_input) == 0) {
@@ -575,35 +614,16 @@ static char* calc_preprocess_input(Mode* sw, const char* input)
     g_free(pd->previous_input);
     pd->previous_input = g_strdup(input);
 
-    char *qalc_binary = "qalc";
-    if (find_arg(QALC_BINARY_OPTION) >= 0) {
-        find_arg_str(QALC_BINARY_OPTION, &qalc_binary);
+    // Check for "plot(", show a warning and don't call qalc if seen.
+    if (pd->plot_re) {
+        gboolean matches = g_regex_match(pd->plot_re, input, G_REGEX_MATCH_DEFAULT, NULL);
+        if (matches) {
+            pd->last_result = strdup("warning: will plot when Enter key is pressed");
+            rofi_view_reload();
+            return g_strdup(input);
+        }
     }
-
-    // Build array of strings that is later fed into a subprocess to actually start qalc with proper parameters.
-    GPtrArray *argv = g_ptr_array_new();
-    g_ptr_array_add(argv, qalc_binary);
-    g_ptr_array_add(argv, "-s");
-    g_ptr_array_add(argv, "update_exchange_rates 1days");
-    if (find_arg(TERSE_OPTION) > -1) {
-        g_ptr_array_add(argv, "-t");
-    }
-    if (find_arg(NO_UNICODE) > -1) {
-        g_ptr_array_add(argv, "+u8");
-    }
-    g_ptr_array_add(argv, (gchar*)input);
-    g_ptr_array_add(argv, NULL);
-
-    GSubprocess* process = g_subprocess_newv((const gchar**)(argv->pdata), G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_MERGE, &error);
-    g_ptr_array_free(argv, TRUE);
-
-    if (error != NULL) {
-        g_error("Spawning child failed: %s", error->message);
-        g_error_free(error);
-    }
-
-    g_subprocess_wait_check_async(process, NULL, process_cb, (gpointer)&pd->last_result);
-
+    invoke_qalc(pd, input);
     return g_strdup(input);
 }
 
