@@ -82,6 +82,10 @@ typedef struct
 #define HINT_WELCOME "-hint-welcome"
 #define HINT_WELCOME_STR "Calculator"
 
+// Option to specify error color
+#define CALC_ERROR_COLOR "-error-color"
+#define CALC_ERROR_COLOR_STR "PaleVioletRed"
+
 // The following keys can be specified in `CALC_COMMAND_FLAG` and
 // will be replaced with the left-hand side and right-hand side of
 // the equation.
@@ -244,6 +248,13 @@ static void get_calc(Mode* sw)
     char *cmd = NULL;
     if (find_arg_str(CALC_COMMAND_OPTION, &cmd)) {
         pd->cmd = g_strdup(cmd);
+    }
+
+    char *calc_error_color = NULL;
+    if (find_arg_str(CALC_ERROR_COLOR, &calc_error_color)) {
+        pd->calc_error_color = g_strdup(calc_error_color);
+    } else {
+        pd->calc_error_color = CALC_ERROR_COLOR_STR;
     }
 
     pd->hint_result = find_arg_str(HINT_RESULT, &cmd)
@@ -612,7 +623,7 @@ static char *calc_get_message ( const Mode *sw )
 {
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     if (is_error_string(pd->last_result)) {
-        return g_markup_printf_escaped("<span foreground='PaleVioletRed'>%s</span>", pd->last_result);
+        return g_markup_printf_escaped("<span foreground='%s'>%s</span>", calc_error_color, pd->last_result);
     }
 
     if (*pd->last_result) {
