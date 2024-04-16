@@ -44,6 +44,7 @@ typedef struct
     char* cmd;
     char *hint_result;
     char *hint_welcome;
+    char *calc_error_color;
     char *last_result;
     char *previous_input;
     GPtrArray* history;
