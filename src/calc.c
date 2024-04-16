@@ -84,7 +84,7 @@ typedef struct
 #define HINT_WELCOME_STR "Calculator"
 
 // Option to specify error color
-#define CALC_ERROR_COLOR "-error-color"
+#define CALC_ERROR_COLOR "-calc-error-color"
 #define CALC_ERROR_COLOR_STR "PaleVioletRed"
 
 // The following keys can be specified in `CALC_COMMAND_FLAG` and
