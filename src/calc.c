@@ -624,7 +624,7 @@ static char *calc_get_message ( const Mode *sw )
 {
     CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
     if (is_error_string(pd->last_result)) {
-        return g_markup_printf_escaped("<span foreground='%s'>%s</span>", calc_error_color, pd->last_result);
+        return g_markup_printf_escaped("<span foreground='%s'>%s</span>", pd->calc_error_color, pd->last_result);
     }
 
     if (*pd->last_result) {
