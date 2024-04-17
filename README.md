@@ -156,6 +156,18 @@ mainbox {
 ```
 Reference Rofi docs: [Layout](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown#layout), [Base Widgets](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown#base-widgets), [Children](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown#children)
 
+### Changing the color of the error message
+The error message is rendered in the same `textbox` as the result. By default, it uses the color `PaleVioletRed`, which can be changed by supplying the `-calc-error-color '$COLOR'` option, where `$COLOR` can be in one of the following formats:
+
+- `#{HEX}{3}` (rgb)
+- `#{HEX}{4}` (rgba)
+- `#{HEX}{6}` (rrggbb)
+- `#{HEX}{8}` (rrggbbaa)
+- `{named-color}`
+
+Reference Rofi docs: [Color](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown#color)
+
+**NOTE:** Other color formats mentioned there (like `rgb[a]()`, `hsl[a]()`, etc.) can not be used and will throw a `Pango-WARNING`.
 
 ## Development
 
