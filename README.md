@@ -44,7 +44,8 @@ You will also need development headers for `rofi`. Depending on your distributio
 * Debian: `apt install rofi-dev qalc libtool libtool-bin`
 * Ubuntu: `apt install rofi-dev qalc libtool`
 * Solus: `eopkg it rofi-devel libqalculate`
-* CentOS, Fedora: Install `qalculate automake libtool` (find `rofi-devel` headers yourself)
+* CentOS: Install `qalculate automake libtool` (find `rofi-devel` headers yourself)
+* Fedora: `dnf install qalculate automake libtool cairo-devel rofi-devel`
 * VoidLinux: `xbps-install -S rofi-devel libqalculate automake libtool`
 * Others: look it up :)
 
