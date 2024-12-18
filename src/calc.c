@@ -324,6 +324,14 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
 static void append_last_result_to_history(CALCModePrivateData* pd) {
     if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
         char* history_entry = g_strdup_printf("%s", pd->last_result);
+
+        // Replace newlines with semicolons so one entry isn't split into multiple entries
+        for (unsigned int i = 0; i < strlen(history_entry); i++) {
+            if (history_entry[i] == '\n') {
+                history_entry[i] = ';';
+            }
+        }
+
         g_ptr_array_add(pd->history, (gpointer) history_entry);
         if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
             append_str_to_history(history_entry);
@@ -539,9 +547,10 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
         error = NULL;
     }
 
+    gsize bytes_read = 0;
     unsigned int stdout_bufsize = 4096;
     char stdout_buf[stdout_bufsize];
-    g_input_stream_read_all(stdout_stream, stdout_buf, stdout_bufsize, NULL, NULL, &error);
+    g_input_stream_read_all(stdout_stream, stdout_buf, stdout_bufsize, &bytes_read, NULL, &error);
 
     if (error != NULL) {
         g_error("Process errored with: %s", error->message);
@@ -549,8 +558,7 @@ static void process_cb(GObject* source_object, GAsyncResult* res, gpointer user_
         error = NULL;
     }
 
-    unsigned int line_length = strcspn(stdout_buf, "\n");
-    *last_result = g_strndup(stdout_buf, line_length);
+    *last_result = g_strndup(stdout_buf, bytes_read - 1);
     g_input_stream_close(stdout_stream, NULL, &error);
 
     if (error != NULL) {
