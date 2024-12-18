@@ -324,6 +324,14 @@ static int get_real_history_index(GPtrArray* history, unsigned int selected_line
 static void append_last_result_to_history(CALCModePrivateData* pd) {
     if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
         char* history_entry = g_strdup_printf("%s", pd->last_result);
+
+        // Replace newlines with semicolons so one entry isn't split into multiple entries
+        for (unsigned int i = 0; i < strlen(history_entry); i++) {
+            if (history_entry[i] == '\n') {
+                history_entry[i] = ';';
+            }
+        }
+
         g_ptr_array_add(pd->history, (gpointer) history_entry);
         if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
             append_str_to_history(history_entry);
