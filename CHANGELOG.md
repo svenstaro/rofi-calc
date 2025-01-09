@@ -5,8 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - ReleaseDate
+## [2.3.0] - 2025-01-09
 - Fix multiline outputs only showing the first line [#128](https://github.com/svenstaro/rofi-calc/pull/128) (thanks @jdholtz)
+- Error Message Color [#121](https://github.com/svenstaro/rofi-calc/pull/121) (thanks @sornig)
 
 ## [2.2.1] - 2024-03-28
 - Fix skip escaping some unicode math symbols [#109](https://github.com/svenstaro/rofi-calc/pull/109) (thanks @arades79)
