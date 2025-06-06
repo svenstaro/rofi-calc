@@ -5,15 +5,16 @@ on: [push, pull_request]
 jobs:
   build:
     name: Building with ${{ matrix.compiler }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         compiler: [clang, gcc]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Install dependencies
       run: |
+        sudo apt update
         sudo apt install rofi-dev
     - name: make
       run: |
