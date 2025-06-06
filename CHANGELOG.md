@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.1] - 2025-06-06
+- Specify mode type [#134](https://github.com/svenstaro/rofi-calc/pull/134) (thanks @zspher)
+
 ## [2.3.0] - 2025-01-09
 - Fix multiline outputs only showing the first line [#128](https://github.com/svenstaro/rofi-calc/pull/128) (thanks @jdholtz)
 - Error Message Color [#121](https://github.com/svenstaro/rofi-calc/pull/121) (thanks @sornig)
