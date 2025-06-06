@@ -660,4 +660,5 @@ Mode mode =
     ._preprocess_input  = calc_preprocess_input,
     .private_data       = NULL,
     .free               = NULL,
+    .type               = MODE_TYPE_SWITCHER,
 };
