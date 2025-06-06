@@ -660,9 +660,8 @@ Mode mode =
     ._preprocess_input  = calc_preprocess_input,
     .private_data       = NULL,
     .free               = NULL,
-    #ifdef MODE_TYPE_SWITCHER
-    #error "lol"
+#if ABI_VERSION >= 7u
     // Only recent rofi versions have this so we'll have to use this ifdef
     .type               = MODE_TYPE_SWITCHER,
-    #endif
+#endif
 };
