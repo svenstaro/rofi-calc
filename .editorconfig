@@ -1,0 +1,7 @@
+root = true
+
+[*]
+indent_style = space
+
+[*.c]
+indent_size = 4
