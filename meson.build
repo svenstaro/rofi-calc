@@ -1,4 +1,4 @@
-project('rofi-calc', 'c', version: '0.1.0', license: 'MIT')
+project('rofi-calc', 'c', version: '2.3.1', license: 'MIT')
 
 rofi = dependency('rofi', version: '>=1.5.4')
 deps = [
