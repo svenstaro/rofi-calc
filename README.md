@@ -39,14 +39,14 @@ You need a C compilation toolchain (a `cc`, `meson`, `pkg-config`, ...), `rofi` 
 
 You will also need development headers for `rofi`. Depending on your distribution these may be included in different packages:
 
-* Arch Linux, Gentoo: included with `rofi`, `libqalculate`
-* OpenSUSE: `zypper in rofi rofi-devel qalculate`
-* Debian: `apt install rofi-dev qalc libtool libtool-bin`
-* Ubuntu: `apt install rofi-dev qalc libtool`
+* Arch Linux, Gentoo: included with `rofi`, `libqalculate`, `meson`
+* OpenSUSE: `zypper in rofi rofi-devel qalculate meson`
+* Debian: `apt install rofi-dev qalc meson`
+* Ubuntu: `apt install rofi-dev qalc meson`
 * Solus: `eopkg it rofi-devel libqalculate`
-* CentOS: Install `qalculate automake libtool` (find `rofi-devel` headers yourself)
-* Fedora: `dnf install qalculate automake libtool cairo-devel rofi-devel`
-* VoidLinux: `xbps-install -S rofi-devel libqalculate automake libtool`
+* CentOS: Install `qalculate meson` (find `rofi-devel` headers yourself)
+* Fedora: `dnf install qalculate meson libtool cairo-devel rofi-devel`
+* VoidLinux: `xbps-install -S rofi-devel libqalculate meson libtool`
 * Others: look it up :)
 
 Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `qalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
@@ -147,7 +147,7 @@ mainbox {
 }
 ```
 make sure the list contains `message`<br>
-for example 
+for example
 ```
 mainbox {
     children: [inputbar, message, listview]
