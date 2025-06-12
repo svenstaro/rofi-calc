@@ -11,14 +11,13 @@ jobs:
         compiler: [clang, gcc]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install rofi-dev
-    - name: make
-      run: |
-        export CC=${{ matrix.compiler }}
-        autoreconf -i
-        ./configure
-        make -j$(nproc)
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install rofi-dev meson
+      - name: make
+        run: |
+          export CC=${{ matrix.compiler }}
+          meson setup build
+          meson compile -C build/

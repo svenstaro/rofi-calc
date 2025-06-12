@@ -35,7 +35,7 @@ You can disable persistent history if you don't like that.
 
 ### From source
 
-You need a C compilation toolchain (a `cc`, `autoconf`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `qalculate` (version > 2.0).
+You need a C compilation toolchain (a `cc`, `meson`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `qalculate` (version > 2.0).
 
 You will also need development headers for `rofi`. Depending on your distribution these may be included in different packages:
 
@@ -51,18 +51,14 @@ You will also need development headers for `rofi`. Depending on your distributio
 
 Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `qalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
 
-**rofi-calc** uses autotools as build system. If installing from git, the following steps should install it:
+**rofi-calc** uses meson as a build system. If installing from git, the following steps should install it:
 
 ```bash
-$ git clone https://github.com/svenstaro/rofi-calc.git
-$ cd rofi-calc/
-$ mkdir m4
-$ autoreconf -i
-$ mkdir build
-$ cd build/
-$ ../configure
-$ make
-# make install
+git clone https://github.com/svenstaro/rofi-calc.git
+cd rofi-calc/
+meson setup build
+meson compile -C build/
+# meson install
 ```
 
 ## Advanced Usage
@@ -175,10 +171,9 @@ Reference Rofi docs: [Color](https://github.com/davatorium/rofi/blob/next/doc/ro
 ## Development
 
 If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
-
-    autoreconf -i
-    mkdir build
-    cd build
-    ../configure
-    make
-    rofi -plugin-path .libs -show calc -modi calc -no-show-match -no-sort
+```sh
+cd rofi-calc
+meson setup build
+meson compile -C build/
+ROFI_PLUGIN_PATH="build/src" rofi -show calc -modes calc -no-show-match -no-sort
+```

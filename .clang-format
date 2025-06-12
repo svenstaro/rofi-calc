@@ -1,0 +1,22 @@
+---
+Language: Cpp
+
+IndentWidth: 4
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false # Unknown to clang-format-5.0
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: true # Unknown to clang-format-4.0
+  SplitEmptyRecord: true # Unknown to clang-format-4.0
+  SplitEmptyNamespace: true # Unknown to clang-format-4.0
+
