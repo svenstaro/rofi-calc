@@ -24,6 +24,7 @@
 
 #include <errno.h>
 #include <gio/gio.h>
+#include <glib.h>
 #include <gmodule.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,10 +34,21 @@
 #include <rofi/helper.h>
 #include <rofi/mode-private.h>
 #include <rofi/mode.h>
+#include <rofi/rofi-types.h>
 
 #include <stdint.h>
 
 G_MODULE_EXPORT Mode mode;
+
+typedef struct {
+    gboolean no_bold;
+    gboolean no_unicode;
+    gboolean terse;
+    gboolean no_history;
+    gboolean no_persist_history;
+    gboolean automatic_save_to_history;
+    gboolean calc_command_uses_history;
+} CALCModeConfig;
 
 // The internal data structure holding the private data of the TEST Mode.
 typedef struct {
@@ -47,6 +59,7 @@ typedef struct {
     char *last_result;
     char *previous_input;
     GPtrArray *history;
+    CALCModeConfig config;
 } CALCModePrivateData;
 
 // Used in splitting equations into {expression} and {result}.
@@ -59,30 +72,30 @@ typedef struct {
 #define QALC_BINARY_OPTION "-qalc-binary"
 
 // Calc command option
-#define CALC_COMMAND_OPTION "-calc-command"
+#define CALC_COMMAND_OPTION "calc-command"
 
 // Whether calc command emits a history entry
-#define CALC_COMMAND_USES_HISTORY "-calc-command-history"
+#define CALC_COMMAND_USES_HISTORY "calc-command-history"
 
 // Option to disable bold results
-#define NO_BOLD_OPTION "-no-bold"
+#define NO_BOLD_OPTION "no-bold"
 
 // Option to disable qalc's unicode mode
-#define NO_UNICODE "-no-unicode"
+#define NO_UNICODE_OPTION "no-unicode"
 
 // Terse option
-#define TERSE_OPTION "-terse"
+#define TERSE_OPTION "terse"
 
 // Option to specify result hint
-#define HINT_RESULT "-hint-result"
+#define HINT_RESULT_OPTION "hint-result"
 #define HINT_RESULT_STR "Result: "
 
 // Option to specify welcome hint
-#define HINT_WELCOME "-hint-welcome"
+#define HINT_WELCOME_OPTION "hint-welcome"
 #define HINT_WELCOME_STR "Calculator"
 
 // Option to specify error color
-#define CALC_ERROR_COLOR "-calc-error-color"
+#define CALC_ERROR_COLOR "calc-error-color"
 #define CALC_ERROR_COLOR_STR "PaleVioletRed"
 
 // The following keys can be specified in `CALC_COMMAND_FLAG` and
@@ -92,9 +105,9 @@ typedef struct {
 #define EQUATION_RHS_KEY "{result}"
 
 // History stuff
-#define NO_PERSIST_HISTORY_OPTION "-no-persist-history"
-#define NO_HISTORY_OPTION "-no-history"
-#define AUTOMATIC_SAVE_TO_HISTORY "-automatic-save-to-history"
+#define NO_PERSIST_HISTORY_OPTION "no-persist-history"
+#define NO_HISTORY_OPTION "no-history"
+#define AUTOMATIC_SAVE_TO_HISTORY "automatic-save-to-history"
 #define HISTORY_LENGTH 100
 
 // Limit `str` to at most `limit` new lines.
@@ -240,6 +253,143 @@ static void delete_line_from_history(uint32_t line) {
     g_free(history_dir);
 }
 
+static void set_config(Mode *sw) {
+    CALCModePrivateData *pd = (CALCModePrivateData *)mode_get_private_data(sw);
+    ConfigEntry *config_file = rofi_config_find_widget(sw->name, NULL, TRUE);
+
+    pd->config.no_bold = FALSE;
+    pd->config.no_unicode = FALSE;
+    pd->config.terse = FALSE;
+    pd->config.no_history = FALSE;
+    pd->config.no_persist_history = FALSE;
+    pd->config.automatic_save_to_history = FALSE;
+    pd->config.calc_command_uses_history = FALSE;
+
+    pd->hint_result = HINT_RESULT_STR;
+    pd->hint_welcome = HINT_WELCOME_STR;
+    pd->calc_error_color = CALC_ERROR_COLOR_STR;
+
+    if (config_file != NULL) {
+        Property *no_bold = rofi_theme_find_property(config_file, P_BOOLEAN,
+                                                     NO_BOLD_OPTION, TRUE);
+        if (no_bold != NULL && (no_bold->type == P_BOOLEAN)) {
+            pd->config.no_bold = no_bold->value.b;
+        }
+
+        Property *terse = rofi_theme_find_property(config_file, P_BOOLEAN,
+                                                   TERSE_OPTION, TRUE);
+        if (terse != NULL && (terse->type == P_BOOLEAN)) {
+            pd->config.terse = terse->value.b;
+        }
+
+        Property *no_unicode = rofi_theme_find_property(
+            config_file, P_BOOLEAN, NO_UNICODE_OPTION, TRUE);
+        if (no_unicode != NULL && (no_unicode->type == P_BOOLEAN)) {
+            pd->config.no_unicode = no_unicode->value.b;
+        }
+
+        Property *cmd_option = rofi_theme_find_property(
+            config_file, P_STRING, CALC_COMMAND_OPTION, TRUE);
+        if (cmd_option != NULL &&
+            (cmd_option->type == P_STRING && cmd_option->value.s)) {
+            pd->cmd = g_strdup(cmd_option->value.s);
+        }
+
+        Property *hint_result_option = rofi_theme_find_property(
+            config_file, P_STRING, HINT_RESULT_OPTION, TRUE);
+        if (hint_result_option != NULL &&
+            (hint_result_option->type == P_STRING &&
+             hint_result_option->value.s)) {
+            pd->hint_result = g_strdup(hint_result_option->value.s);
+        }
+
+        Property *hint_welcome_option = rofi_theme_find_property(
+            config_file, P_STRING, HINT_WELCOME_OPTION, TRUE);
+        if (hint_welcome_option != NULL &&
+            (hint_welcome_option->type == P_STRING &&
+             hint_welcome_option->value.s)) {
+            pd->hint_welcome = g_strdup(hint_welcome_option->value.s);
+        }
+
+        Property *calc_error_color_option = rofi_theme_find_property(
+            config_file, P_STRING, CALC_ERROR_COLOR, TRUE);
+        if (calc_error_color_option != NULL &&
+            (calc_error_color_option->type == P_STRING &&
+             calc_error_color_option->value.s)) {
+            pd->calc_error_color = g_strdup(calc_error_color_option->value.s);
+        }
+
+        Property *no_history = rofi_theme_find_property(
+            config_file, P_BOOLEAN, NO_HISTORY_OPTION, TRUE);
+        if (no_history != NULL && (no_history->type == P_BOOLEAN)) {
+            pd->config.no_history = no_history->value.b;
+        }
+
+        Property *no_persist_history = rofi_theme_find_property(
+            config_file, P_BOOLEAN, NO_PERSIST_HISTORY_OPTION, TRUE);
+        if (no_persist_history != NULL &&
+            (no_persist_history->type == P_BOOLEAN)) {
+            pd->config.no_persist_history = no_persist_history->value.b;
+        }
+
+        Property *automatic_save_to_history = rofi_theme_find_property(
+            config_file, P_BOOLEAN, AUTOMATIC_SAVE_TO_HISTORY, TRUE);
+        if (automatic_save_to_history != NULL &&
+            (automatic_save_to_history->type == P_BOOLEAN)) {
+            pd->config.automatic_save_to_history =
+                automatic_save_to_history->value.b;
+        }
+
+        Property *calc_command_uses_history = rofi_theme_find_property(
+            config_file, P_BOOLEAN, CALC_COMMAND_USES_HISTORY, TRUE);
+        if (calc_command_uses_history != NULL &&
+            (calc_command_uses_history->type == P_BOOLEAN)) {
+            pd->config.calc_command_uses_history =
+                calc_command_uses_history->value.b;
+        }
+    }
+    if (find_arg("-" NO_BOLD_OPTION) > -1)
+        pd->config.no_bold = TRUE;
+
+    if (find_arg("-" TERSE_OPTION) > -1)
+        pd->config.terse = TRUE;
+
+    if (find_arg("-" NO_UNICODE_OPTION) > -1)
+        pd->config.no_unicode = TRUE;
+
+    if (find_arg("-" NO_HISTORY_OPTION) > -1)
+        pd->config.no_history = TRUE;
+
+    if (find_arg("-" NO_PERSIST_HISTORY_OPTION) > -1)
+        pd->config.no_persist_history = TRUE;
+
+    if (find_arg("-" AUTOMATIC_SAVE_TO_HISTORY) > -1)
+        pd->config.automatic_save_to_history = TRUE;
+
+    if (find_arg("-" CALC_COMMAND_USES_HISTORY) > -1)
+        pd->config.calc_command_uses_history = TRUE;
+
+    char *cmd = NULL;
+    if (find_arg_str("-" CALC_COMMAND_OPTION, &cmd)) {
+        pd->cmd = g_strdup(cmd);
+    }
+
+    char *hint_result = NULL;
+    if (find_arg_str("-" HINT_RESULT_OPTION, &hint_result)) {
+        pd->hint_result = g_strdup(hint_result);
+    }
+
+    char *hint_welcome = NULL;
+    if (find_arg_str("-" HINT_WELCOME_OPTION, &hint_welcome)) {
+        pd->hint_welcome = g_strdup(hint_welcome);
+    }
+
+    char *calc_error_color = NULL;
+    if (find_arg_str(CALC_ERROR_COLOR, &calc_error_color)) {
+        pd->calc_error_color = g_strdup(calc_error_color);
+    }
+}
+
 // Get the entries to display.
 // This gets called on plugin initialization.
 static void get_calc(Mode *sw) {
@@ -248,26 +398,9 @@ static void get_calc(Mode *sw) {
     pd->history = g_ptr_array_new();
     pd->previous_input = g_strdup(""); // providing initial value
 
-    char *cmd = NULL;
-    if (find_arg_str(CALC_COMMAND_OPTION, &cmd)) {
-        pd->cmd = g_strdup(cmd);
-    }
+    set_config(sw);
 
-    char *calc_error_color = NULL;
-    if (find_arg_str(CALC_ERROR_COLOR, &calc_error_color)) {
-        pd->calc_error_color = g_strdup(calc_error_color);
-    } else {
-        pd->calc_error_color = CALC_ERROR_COLOR_STR;
-    }
-
-    pd->hint_result =
-        find_arg_str(HINT_RESULT, &cmd) ? g_strdup(cmd) : HINT_RESULT_STR;
-
-    pd->hint_welcome =
-        find_arg_str(HINT_WELCOME, &cmd) ? g_strdup(cmd) : HINT_WELCOME_STR;
-
-    if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1 &&
-        find_arg(NO_HISTORY_OPTION) == -1) {
+    if (!pd->config.no_history && !pd->config.no_persist_history) {
         // Load old history if it exists.
         GError *error = NULL;
         gchar *history_file = g_build_filename(g_get_user_data_dir(), "rofi",
@@ -313,7 +446,8 @@ static unsigned int calc_mode_get_num_entries(const Mode *sw) {
     const CALCModePrivateData *pd =
         (const CALCModePrivateData *)mode_get_private_data(sw);
 
-    // Add +1 because we put a static message into the history array as well.
+    // Add +1 because we put a static message into the history array as
+    // well.
     return pd->history->len + 1;
 }
 
@@ -344,22 +478,23 @@ static void append_last_result_to_history(CALCModePrivateData *pd) {
         }
 
         g_ptr_array_add(pd->history, (gpointer)history_entry);
-        if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
+        if (!pd->config.no_persist_history) {
             append_str_to_history(history_entry);
         }
     }
 }
 
-// Split the equation result into the left (expression) and right (result) side
-// of the equals sign.
+// Split the equation result into the left (expression) and right (result)
+// side of the equals sign.
 //
-// Note that both sides can themselves contain equals sign, consider the simple
-// example of `20x + 40 = 100`. This means we cannot naively split on the '='
-// character.
-static char **split_equation(char *string) {
+// Note that both sides can themselves contain equals sign, consider the
+// simple example of `20x + 40 = 100`. This means we cannot naively split on
+// the '=' character.
+static char **split_equation(Mode *sw, char *string) {
+    CALCModePrivateData *pd = (CALCModePrivateData *)mode_get_private_data(sw);
     char **result = malloc(2 * sizeof(char *));
 
-    if (find_arg(TERSE_OPTION) > -1) {
+    if (pd->config.terse) {
         result[0] = NULL;
         result[1] = g_strdup(string); // with -terse, string _is_ the result
         return result;
@@ -391,12 +526,13 @@ static char **split_equation(char *string) {
     }
 
     if (curr == string) {
-        // No equals signs were found. Shouldn't happen, but if it does treat
-        // the entire expression as the result.
+        // No equals signs were found. Shouldn't happen, but if it does
+        // treat the entire expression as the result.
         result[0] = NULL;
         result[1] = g_strdup(string);
     } else {
-        // We found an equals sign; set it to null to split the string in two.
+        // We found an equals sign; set it to null to split the string in
+        // two.
         *curr = '\0';
 
         // Strip trailing whitespace with `g_strchomp()` from the left.
@@ -408,7 +544,7 @@ static char **split_equation(char *string) {
     return result;
 }
 
-static void execsh(char *cmd, char *entry) {
+static void execsh(Mode *sw, char *cmd, char *entry) {
     // If no command was provided, simply print the entry
     if (cmd == NULL) {
         printf("%s\n", entry);
@@ -416,7 +552,7 @@ static void execsh(char *cmd, char *entry) {
     }
 
     // Otherwise, we will execute -calc-command
-    char **parts = split_equation(entry);
+    char **parts = split_equation(sw, entry);
     char *user_cmd = helper_string_replace_if_exists(
         cmd, EQUATION_LHS_KEY, parts[0], EQUATION_RHS_KEY, parts[1], NULL);
     g_free(parts);
@@ -445,33 +581,33 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
     } else if (menu_entry & MENU_QUICK_SWITCH) {
         retv = (menu_entry & MENU_LOWER_MASK);
     } else if ((menu_entry & MENU_OK) &&
-               (selected_line == 0 && find_arg(NO_HISTORY_OPTION) == -1)) {
+               (selected_line == 0 && !pd->config.no_history)) {
         append_last_result_to_history(pd);
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) &&
-               (selected_line > 0 || find_arg(NO_HISTORY_OPTION) != -1)) {
+               (selected_line > 0 || pd->config.no_history)) {
         char *entry;
-        if (find_arg(NO_HISTORY_OPTION) != -1)
+        if (pd->config.no_history)
             entry = pd->last_result;
         else
             entry = g_ptr_array_index(
                 pd->history,
                 get_real_history_index(pd->history, selected_line));
 
-        execsh(pd->cmd, entry);
+        execsh(sw, pd->cmd, entry);
         retv = MODE_EXIT;
     } else if (menu_entry & MENU_CUSTOM_INPUT) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
-            if (find_arg(NO_HISTORY_OPTION) == -1 &&
+            if (!pd->config.no_history &&
                 find_arg(CALC_COMMAND_USES_HISTORY) != -1) {
                 char *history_entry = g_strdup_printf("%s", pd->last_result);
                 g_ptr_array_add(pd->history, (gpointer)history_entry);
-                if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1) {
+                if (!pd->config.no_persist_history) {
                     append_str_to_history(history_entry);
                 }
             }
 
-            execsh(pd->cmd, pd->last_result);
+            execsh(sw, pd->cmd, pd->last_result);
             retv = MODE_EXIT;
         } else {
             retv = RELOAD_DIALOG;
@@ -481,8 +617,7 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
             g_ptr_array_remove_index(
                 pd->history,
                 get_real_history_index(pd->history, selected_line));
-            if (find_arg(NO_PERSIST_HISTORY_OPTION) == -1 &&
-                find_arg(NO_HISTORY_OPTION) == -1) {
+            if (!pd->config.no_persist_history && !pd->config.no_history) {
                 delete_line_from_history(selected_line - 1);
             }
         }
@@ -505,7 +640,7 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
 
 static void calc_mode_destroy(Mode *sw) {
     CALCModePrivateData *pd = (CALCModePrivateData *)mode_get_private_data(sw);
-    if (find_arg(AUTOMATIC_SAVE_TO_HISTORY) != -1) {
+    if (pd->config.automatic_save_to_history) {
         append_last_result_to_history(pd);
     }
 
@@ -526,7 +661,7 @@ static char *calc_get_display_value(const Mode *sw, unsigned int selected_line,
     }
 
     if (selected_line == 0) {
-        if (find_arg(NO_HISTORY_OPTION) == -1)
+        if (!pd->config.no_history)
             return g_strdup("Add to history");
         else
             return g_strdup("");
@@ -555,8 +690,8 @@ static void process_cb(GObject *source_object, GAsyncResult *res,
     g_subprocess_wait_check_finish(process, res, &error);
 
     if (error != NULL) {
-        // With qalculate >= 5.0.0, exit status 1 can mean bad (or incomplete)
-        // input
+        // With qalculate >= 5.0.0, exit status 1 can mean bad (or
+        // incomplete) input
         if (error->domain != G_SPAWN_EXIT_ERROR || error->code != 1) {
             g_error("Process errored with: %s", error->message);
         }
@@ -610,10 +745,10 @@ static char *calc_preprocess_input(Mode *sw, const char *input) {
     g_ptr_array_add(argv, qalc_binary);
     g_ptr_array_add(argv, "-s");
     g_ptr_array_add(argv, "update_exchange_rates 1days");
-    if (find_arg(TERSE_OPTION) > -1) {
+    if (pd->config.terse) {
         g_ptr_array_add(argv, "-t");
     }
-    if (find_arg(NO_UNICODE) > -1) {
+    if (!pd->config.no_unicode) {
         g_ptr_array_add(argv, "+u8");
     }
     g_ptr_array_add(argv, (gchar *)input);
@@ -644,7 +779,8 @@ static char *calc_get_message(const Mode *sw) {
     }
 
     if (*pd->last_result) {
-        if (find_arg(NO_BOLD_OPTION) == -1)
+
+        if (!pd->config.no_bold)
             return g_markup_printf_escaped("%s<b>%s</b>", pd->hint_result,
                                            pd->last_result);
         else
