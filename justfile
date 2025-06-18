@@ -1,7 +1,11 @@
 PLUGIN_NAME := "calc"
 TEST_CONFIG := join(source_directory(),"test/config.rasi")
 
-build: build-gcc build-clang
+default: build
+
+build: 
+    meson setup build
+    meson compile -C build
 
 build-gcc:
     CC=gcc meson setup build-gcc
