@@ -1,0 +1,14 @@
+configuration {
+    calc {
+        no-bold: false;
+        terse: true;
+        no-history: false;
+        no-persist-history: false;
+        automatic-save-to-history: true;
+        calc-command-history: true;
+        calc-error-color: "Green";
+        calc-command: "notify-send {result}";
+        hint-result: "Res: ";
+        hint-welcome: "Calc";
+    }
+}
