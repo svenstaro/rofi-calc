@@ -15,4 +15,4 @@ jobs:
       - uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-      - run: nix-shell --command "just build-${{ matrix.compiler }}"
+      - run: nix-shell --command "CC=${{ matrix.compiler }} just build clean"

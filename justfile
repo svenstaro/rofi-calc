@@ -7,13 +7,8 @@ build:
     meson setup build
     meson compile -C build
 
-build-gcc:
-    CC=gcc meson setup build-gcc
-    meson compile -C build-gcc
-
-build-clang:
-    CC=clang meson setup build-clang
-    meson compile -C build-clang
-
 run: build
-    ROFI_PLUGIN_PATH="build/src" rofi -modes {{ PLUGIN_NAME }},drun,run -show {{ PLUGIN_NAME }} -config {{ TEST_CONFIG }}
+    ROFI_PLUGIN_PATH="build/src" rofi -modes {{ PLUGIN_NAME }},drun -show {{ PLUGIN_NAME }} -config {{ TEST_CONFIG }}
+
+clean:
+    rm build -r
