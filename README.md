@@ -186,7 +186,5 @@ Reference Rofi docs: [Color](https://github.com/davatorium/rofi/blob/next/doc/ro
 If you're developing this, it might be helpful to start rofi directly with a locally compiled plugin like this:
 ```sh
 cd rofi-calc
-meson setup build
-meson compile -C build/
-ROFI_PLUGIN_PATH="build/src" rofi -show calc -modes calc -no-show-match -no-sort
+just run
 ```
