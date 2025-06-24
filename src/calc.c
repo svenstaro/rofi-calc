@@ -253,6 +253,8 @@ static void delete_line_from_history(uint32_t line) {
     g_free(history_dir);
 }
 
+// sets config values from rofi config file and command line
+// command line options have higher priority than config file
 static void set_config(Mode *sw) {
     CALCModePrivateData *pd = (CALCModePrivateData *)mode_get_private_data(sw);
     ConfigEntry *config_file = rofi_config_find_widget(sw->name, NULL, TRUE);
@@ -348,6 +350,8 @@ static void set_config(Mode *sw) {
                 calc_command_uses_history->value.b;
         }
     }
+
+    // command line options
     if (find_arg("-" NO_BOLD_OPTION) > -1)
         pd->config.no_bold = TRUE;
 

@@ -136,6 +136,19 @@ meson compile -C build/
 - Use the `-hint-result` option to specify the text of the hint before result.
 - Use the `-hint-welcome` option to specify the welcome text.
 
+### Using rofi config
+Configuration options can also be set in the rofi config file. To do so, use the below format. Note that commandline options will override the config file.
+```
+
+configuration {
+    calc {
+        hint-result: "Res: ";
+        hint-welcome: "Calc";
+    }
+}
+```
+also see example [config file](./test/config.rasi)
+
 ## Custom Rofi Theme compatibility
 
 If you are using a custom theme with rofi (e.g. `rofi -show drun -theme ~/.config/rofi/mytheme.rasi`) and don't see the result of the calculation, that's because the rofi-calc mode relies on the `message` widget that might be hidden by some themes.
