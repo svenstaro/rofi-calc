@@ -442,7 +442,7 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
         retv = NEXT_DIALOG;
     } else if (menu_entry & MENU_PREVIOUS) {
         retv = PREVIOUS_DIALOG;
-    } else if (menu_entry & MENU_QUICK_SWITCH) {
+    } else if (menu_entry & MENU_CUSTOM_COMMAND) {
         retv = (menu_entry & MENU_LOWER_MASK);
     } else if ((menu_entry & MENU_OK) &&
                (selected_line == 0 && find_arg(NO_HISTORY_OPTION) == -1)) {
