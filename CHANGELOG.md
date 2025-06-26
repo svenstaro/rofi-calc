@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.3] - 2025-06-26
+- Fix quick switch not working [#139](https://github.com/svenstaro/rofi-calc/pull/139) (thanks @zspher)
+
 ## [2.3.2] - 2025-06-12
 - Switched from autotools to meson [#136](https://github.com/svenstaro/rofi-calc/pull/136) (thanks @zspher)
 
