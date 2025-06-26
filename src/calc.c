@@ -438,11 +438,7 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
                                  unsigned int selected_line) {
     ModeMode retv = MODE_EXIT;
     CALCModePrivateData *pd = (CALCModePrivateData *)mode_get_private_data(sw);
-    if (menu_entry & MENU_NEXT) {
-        retv = NEXT_DIALOG;
-    } else if (menu_entry & MENU_PREVIOUS) {
-        retv = PREVIOUS_DIALOG;
-    } else if (menu_entry & MENU_QUICK_SWITCH) {
+    if (menu_entry & MENU_CUSTOM_COMMAND) {
         retv = (menu_entry & MENU_LOWER_MASK);
     } else if ((menu_entry & MENU_OK) &&
                (selected_line == 0 && find_arg(NO_HISTORY_OPTION) == -1)) {
@@ -493,11 +489,9 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
     g_debug("ding: %x", menu_entry);
     g_debug("MENU_OK: %x", menu_entry & MENU_OK);
     g_debug("MENU_CANCEL: %x", menu_entry & MENU_CANCEL);
-    g_debug("MENU_NEXT: %x", menu_entry & MENU_NEXT);
     g_debug("MENU_CUSTOM_INPUT: %x", menu_entry & MENU_CUSTOM_INPUT);
     g_debug("MENU_ENTRY_DELETE: %x", menu_entry & MENU_ENTRY_DELETE);
-    g_debug("MENU_QUICK_SWITCH: %x", menu_entry & MENU_QUICK_SWITCH);
-    g_debug("MENU_PREVIOUS: %x", menu_entry & MENU_PREVIOUS);
+    g_debug("MENU_CUSTOM_COMMAND: %x", menu_entry & MENU_CUSTOM_COMMAND);
     g_debug("MENU_CUSTOM_ACTION: %x", menu_entry & MENU_CUSTOM_ACTION);
     g_debug("MENU_LOWER_MASK: %x", menu_entry & MENU_LOWER_MASK);
     return retv;
