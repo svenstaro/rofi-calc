@@ -177,3 +177,12 @@ meson setup build
 meson compile -C build/
 ROFI_PLUGIN_PATH="build/src" rofi -show calc -modes calc -no-show-match -no-sort
 ```
+
+## Releasing
+
+This is mostly a note for me on how to release this thing:
+
+- Make sure `CHANGELOG.md` is up to date.
+- Bump version in `meson.build`.
+- Tag a release.
+- Update Arch package.
