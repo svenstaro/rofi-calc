@@ -1,4 +1,10 @@
-project('rofi-calc', 'c', version: '2.3.1', license: 'MIT')
+project(
+  'rofi-calc',
+  'c',
+  version: '2.3.1',
+  license: 'MIT',
+  default_options: ['warning_level=3'],
+)
 
 rofi = dependency('rofi', version: '>=1.5.4')
 deps = [
@@ -9,9 +15,7 @@ deps = [
 ]
 
 add_project_arguments(
-  '-Wparentheses',
   '-Winline',
-  '-pedantic',
   '-Wunreachable-code',
   language: 'c',
 )
