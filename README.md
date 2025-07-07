@@ -35,7 +35,7 @@ You can disable persistent history if you don't like that.
 
 ### From source
 
-You need a C compilation toolchain (a `cc`, `meson`, `pkg-config`, ...), `rofi` (version >= 1.5) as well as `qalculate` (version > 2.0).
+You need a C compilation toolchain (a `cc`, `meson`, `pkg-config`, ...), `rofi` (version >= 1.7.6) as well as `qalculate` (version > 2.0).
 
 You will also need development headers for `rofi`. Depending on your distribution these may be included in different packages:
 
@@ -49,7 +49,8 @@ You will also need development headers for `rofi`. Depending on your distributio
 * VoidLinux: `xbps-install -S rofi-devel libqalculate meson libtool`
 * Others: look it up :)
 
-Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `qalculate` so you might have to compile your own. If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
+Some distributions ship an [extremely outdated](https://github.com/svenstaro/rofi-calc/issues/7) version of `qalculate` so you might have to compile your own.
+If that is the case, see [here](https://github.com/svenstaro/rofi-calc/wiki/Installing-libqalculate-from-source).
 
 **rofi-calc** uses meson as a build system. If installing from git, the following steps should install it:
 

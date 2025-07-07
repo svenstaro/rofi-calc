@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.4.0] - 2025-06-27
 - Add ability to configure via `config.rasi` [#138](https://github.com/svenstaro/rofi-calc/pull/138) (thanks @zspher)
+- Now requires at least rofi 1.7.6
 
 ## [2.3.3] - 2025-06-26
 - Fix quick switch not working [#139](https://github.com/svenstaro/rofi-calc/pull/139) (thanks @zspher)
@@ -45,7 +46,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `-no-unicode` option to disable aforementioned unicode support
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/svenstaro/rofi-calc/compare/v2.3.3...v2.4.0
+[2.3.3]: https://github.com/svenstaro/rofi-calc/compare/v2.3.2...v2.3.3
+[2.3.2]: https://github.com/svenstaro/rofi-calc/compare/v2.3.1...v2.3.2
+[2.3.1]: https://github.com/svenstaro/rofi-calc/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/svenstaro/rofi-calc/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/svenstaro/rofi-calc/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/svenstaro/rofi-calc/compare/v2.1.0...v2.2.0
