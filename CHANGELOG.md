@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.1] - 2025-10-03
+- Fix segfault on exit [#143](https://github.com/svenstaro/rofi-calc/pull/143)
+
 ## [2.4.0] - 2025-06-27
 - Add ability to configure via `config.rasi` [#138](https://github.com/svenstaro/rofi-calc/pull/138) (thanks @zspher)
 - Now requires at least rofi 1.7.6
