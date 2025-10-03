@@ -638,11 +638,11 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
 
 static void calc_mode_destroy(Mode *sw) {
     CALCModePrivateData *pd = (CALCModePrivateData *)mode_get_private_data(sw);
-    if (pd->config.automatic_save_to_history) {
-        append_last_result_to_history(pd);
-    }
 
     if (pd != NULL) {
+        if (pd->config.automatic_save_to_history) {
+            append_last_result_to_history(pd);
+        }
         g_free(pd);
         mode_set_private_data(sw, NULL);
     }
