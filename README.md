@@ -197,4 +197,5 @@ This is mostly a note for me on how to release this thing:
 - Make sure `CHANGELOG.md` is up to date.
 - Bump version in `meson.build`.
 - Tag a release.
+- Create a release on GitHub.
 - Update Arch package.
