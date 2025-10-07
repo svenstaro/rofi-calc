@@ -49,7 +49,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `-no-unicode` option to disable aforementioned unicode support
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/svenstaro/rofi-calc/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/svenstaro/rofi-calc/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/svenstaro/rofi-calc/compare/v2.3.3...v2.4.0
 [2.3.3]: https://github.com/svenstaro/rofi-calc/compare/v2.3.2...v2.3.3
 [2.3.2]: https://github.com/svenstaro/rofi-calc/compare/v2.3.1...v2.3.2
