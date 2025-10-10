@@ -48,6 +48,7 @@ typedef struct {
     gboolean no_persist_history;
     gboolean automatic_save_to_history;
     gboolean calc_command_uses_history;
+    gboolean reuse_result;
 } CALCModeConfig;
 
 // The internal data structure holding the private data of the TEST Mode.
@@ -85,6 +86,9 @@ typedef struct {
 
 // Terse option
 #define TERSE_OPTION "terse"
+
+// Option to reuse result as input on add-to-history
+#define REUSE_RESULT_OPTION "reuse-result"
 
 // Option to specify result hint
 #define HINT_RESULT_OPTION "hint-result"
@@ -266,6 +270,7 @@ static void set_config(Mode *sw) {
     pd->config.no_persist_history = FALSE;
     pd->config.automatic_save_to_history = FALSE;
     pd->config.calc_command_uses_history = FALSE;
+    pd->config.reuse_result = FALSE;
 
     pd->hint_result = HINT_RESULT_STR;
     pd->hint_welcome = HINT_WELCOME_STR;
@@ -349,6 +354,12 @@ static void set_config(Mode *sw) {
             pd->config.calc_command_uses_history =
                 calc_command_uses_history->value.b;
         }
+
+        Property *reuse_result = rofi_theme_find_property(
+            config_file, P_BOOLEAN, REUSE_RESULT_OPTION, TRUE);
+        if (reuse_result != NULL && (reuse_result->type == P_BOOLEAN)) {
+            pd->config.reuse_result = reuse_result->value.b;
+        }
     }
 
     // command line options
@@ -372,6 +383,9 @@ static void set_config(Mode *sw) {
 
     if (find_arg("-" CALC_COMMAND_USES_HISTORY) > -1)
         pd->config.calc_command_uses_history = TRUE;
+
+    if (find_arg("-" REUSE_RESULT_OPTION) > -1)
+        pd->config.reuse_result = TRUE;
 
     char *cmd = NULL;
     if (find_arg_str("-" CALC_COMMAND_OPTION, &cmd)) {
@@ -574,7 +588,7 @@ static void execsh(Mode *sw, char *cmd, char *entry) {
 }
 
 static ModeMode calc_mode_result(Mode *sw, int menu_entry,
-                                 G_GNUC_UNUSED char **input,
+                                 char **input,
                                  unsigned int selected_line) {
     ModeMode retv = MODE_EXIT;
     CALCModePrivateData *pd = (CALCModePrivateData *)mode_get_private_data(sw);
@@ -583,6 +597,13 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
     } else if ((menu_entry & MENU_OK) &&
                (selected_line == 0 && !pd->config.no_history)) {
         append_last_result_to_history(pd);
+        // Reuse Result: if result is valid, replace the input
+        if (pd->config.reuse_result &&
+            !is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
+            if (input != NULL) {
+                *input = g_strdup(pd->last_result);
+            }
+        }
         retv = RELOAD_DIALOG;
     } else if ((menu_entry & MENU_OK) &&
                (selected_line > 0 || pd->config.no_history)) {
