@@ -117,7 +117,7 @@ meson compile -C build/
 
         rofi -show calc -modi calc -no-show-match -no-sort -reuse-result
 
-    Incompatible with `-no-history`.
+    This will have no effect if `-no-history` is enabled.
 
 - To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
 
