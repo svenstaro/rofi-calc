@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.0] - 2025-10-13
+- Add `-reuse-result` to replace the input with the result of the last successful calculation [#146](https://github.com/svenstaro/rofi-calc/pull/146) (thanks @Froggi22)
+
 ## [2.4.1] - 2025-10-03
 - Fix segfault on exit [#143](https://github.com/svenstaro/rofi-calc/pull/143)
 
