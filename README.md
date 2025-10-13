@@ -113,6 +113,12 @@ meson compile -C build/
 
     This means that calculations are put into history even if you don't press `Return`.
 
+- To reuse the result of the last calculation as input, use `-reuse-result`:
+
+        rofi -show calc -modi calc -no-show-match -no-sort -reuse-result
+
+    This will have no effect if `-no-history` is enabled.
+
 - To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
 
     - For `,` separator:
