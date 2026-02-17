@@ -1,7 +1,7 @@
 project(
   'rofi-calc',
   'c',
-  version: '2.4.1',
+  version: '2.5.1',
   license: 'MIT',
   default_options: ['warning_level=3'],
 )
