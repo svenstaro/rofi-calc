@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.5.1 - 2026-02-17
+- fix `-calc-command-history` and `-calc-error-color` not working due to getting parsed incorrectly [#148](https://github.com/svenstaro/rofi-calc/pull/148https://github.com/svenstaro/rofi-calc/pull/148) (thanks @Jontos)
+
 ## [2.5.0] - 2025-10-13
 - Add `-reuse-result` to replace the input with the result of the last successful calculation [#146](https://github.com/svenstaro/rofi-calc/pull/146) (thanks @Froggi22)
 
