@@ -403,7 +403,7 @@ static void set_config(Mode *sw) {
     }
 
     char *calc_error_color = NULL;
-    if (find_arg_str(CALC_ERROR_COLOR, &calc_error_color)) {
+    if (find_arg_str("-" CALC_ERROR_COLOR, &calc_error_color)) {
         pd->calc_error_color = g_strdup(calc_error_color);
     }
 }
@@ -620,7 +620,7 @@ static ModeMode calc_mode_result(Mode *sw, int menu_entry,
     } else if (menu_entry & MENU_CUSTOM_INPUT) {
         if (!is_error_string(pd->last_result) && strlen(pd->last_result) > 0) {
             if (!pd->config.no_history &&
-                find_arg(CALC_COMMAND_USES_HISTORY) != -1) {
+                find_arg("-" CALC_COMMAND_USES_HISTORY) != -1) {
                 char *history_entry = g_strdup_printf("%s", pd->last_result);
                 g_ptr_array_add(pd->history, (gpointer)history_entry);
                 if (!pd->config.no_persist_history) {
