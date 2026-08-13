@@ -119,6 +119,31 @@ meson compile -C build/
 
     This will have no effect if `-no-history` is enabled.
 
+- Use `-live-result-entry` to display the current calculation result as the
+  only list entry:
+
+        rofi -show calc -modi calc -live-result-entry
+
+    The entry is updated while typing. Calculation history is disabled in this
+    mode, and pressing `Return` on the result prints it to stdout or executes
+    the configured `-calc-command`.
+
+    Since the result is exposed as a regular list entry instead of only through
+    rofi's message widget, this option can also be used with combi mode:
+
+        rofi -show combi -combi-modes "drun,run,calc" -live-result-entry
+
+    Use `-terse` to show only the calculated value instead of the full equation:
+
+        rofi -show combi -combi-modes "drun,run,calc" -live-result-entry -terse
+
+    The option can also be enabled in the rofi config:
+
+        calc {
+            live-result-entry: true;
+            terse: true;
+        }
+
 - To enable thousand separators in the output (e.g. `5 * 12 = 6,000`, rather than `6000`) add the following to `~/.config/qalculate/qalc.cfg`
 
     - For `,` separator:
