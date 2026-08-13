@@ -49,6 +49,7 @@ typedef struct {
     gboolean automatic_save_to_history;
     gboolean calc_command_uses_history;
     gboolean reuse_result;
+    gboolean live_result_entry;
 } CALCModeConfig;
 
 // The internal data structure holding the private data of the TEST Mode.
@@ -89,6 +90,9 @@ typedef struct {
 
 // Option to reuse result as input on add-to-history
 #define REUSE_RESULT_OPTION "reuse-result"
+
+// Option to show the live result as the only entry
+#define LIVE_RESULT_ENTRY_OPTION "live-result-entry"
 
 // Option to specify result hint
 #define HINT_RESULT_OPTION "hint-result"
@@ -271,6 +275,7 @@ static void set_config(Mode *sw) {
     pd->config.automatic_save_to_history = FALSE;
     pd->config.calc_command_uses_history = FALSE;
     pd->config.reuse_result = FALSE;
+    pd->config.live_result_entry = FALSE;
 
     pd->hint_result = HINT_RESULT_STR;
     pd->hint_welcome = HINT_WELCOME_STR;
@@ -360,6 +365,13 @@ static void set_config(Mode *sw) {
         if (reuse_result != NULL && (reuse_result->type == P_BOOLEAN)) {
             pd->config.reuse_result = reuse_result->value.b;
         }
+
+        Property *live_result_entry = rofi_theme_find_property(
+            config_file, P_BOOLEAN, LIVE_RESULT_ENTRY_OPTION, TRUE);
+        if (live_result_entry != NULL &&
+            (live_result_entry->type == P_BOOLEAN)) {
+            pd->config.live_result_entry = live_result_entry->value.b;
+        }
     }
 
     // command line options
@@ -387,6 +399,9 @@ static void set_config(Mode *sw) {
     if (find_arg("-" REUSE_RESULT_OPTION) > -1)
         pd->config.reuse_result = TRUE;
 
+    if (find_arg("-" LIVE_RESULT_ENTRY_OPTION) > -1)
+        pd->config.live_result_entry = TRUE;
+
     char *cmd = NULL;
     if (find_arg_str("-" CALC_COMMAND_OPTION, &cmd)) {
         pd->cmd = g_strdup(cmd);
@@ -406,6 +421,9 @@ static void set_config(Mode *sw) {
     if (find_arg_str("-" CALC_ERROR_COLOR, &calc_error_color)) {
         pd->calc_error_color = g_strdup(calc_error_color);
     }
+
+    if (pd->config.live_result_entry)
+        pd->config.no_history = TRUE;
 }
 
 // Get the entries to display.
@@ -680,6 +698,9 @@ static char *calc_get_display_value(const Mode *sw, unsigned int selected_line,
     }
 
     if (selected_line == 0) {
+        if (pd->config.live_result_entry)
+            return g_strdup(pd->last_result);
+
         if (!pd->config.no_history)
             return g_strdup("Add to history");
         else
