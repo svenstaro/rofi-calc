@@ -730,7 +730,10 @@ static void process_cb(GObject *source_object, GAsyncResult *res,
         error = NULL;
     }
 
-    *last_result = g_strndup(stdout_buf, bytes_read - 1);
+    if (bytes_read > 0 && stdout_buf[bytes_read - 1] == '\n') {
+        bytes_read--;
+    }
+    *last_result = g_strndup(stdout_buf, bytes_read);
     g_input_stream_close(stdout_stream, NULL, &error);
 
     if (error != NULL) {
